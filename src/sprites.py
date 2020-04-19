@@ -10,20 +10,58 @@ class Player(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
-        #coordinates on the tilemap; only the rect is drawn by self.all_sprites.draw(self.screen)
+        #coordinates on the grid
         #x, y represent the top left hand corner of the image obj that is being drawn
-        self.x = x 
-        self.y = y
+        self.vx = 0
+        self.vy = 0
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
     
 
-    def move(self, dx=0, dy=0):
-        if (self.x+dx, self.y+dy) not in self.game.wall_locs:
-            self.x += dx
-            self.y += dy
+    def get_keys(self):
+        self.vx, self.vy = 0, 0
+        keys=pg.key.get_pressed()
+        if keys[pg.K_LEFT] or keys[pg.K_a]:
+            self.vx = -PLAYERSPEED
+        if keys[pg.K_RIGHT] or keys[pg.K_d]:
+            self.vx = PLAYERSPEED
+        if keys[pg.K_DOWN] or keys[pg.K_s]:
+            self.vy = PLAYERSPEED
+        if keys[pg.K_UP] or keys[pg.K_w]:
+            self.vy = -PLAYERSPEED
+        if self.vx!=0 and self.vy!=0:
+            self.vx *= 0.7071 #pythagorean theorem if it was v speed in one direction and you want to break it up into x and y; ensures diagonal speed isnt too fast
+            self.vy *= 0.7071
+
+    def collide(self, dir):
+        if dir == "x":
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vx > 0: #if moving to the right during collision
+                    self.x = hits[0].rect.left - self.rect.width #put our left hand corner to the left hand corner of the object we hit and shift ourselves outside of tht object
+                if self.vx < 0: #if moving to the left during collision
+                    self.x = hits[0].rect.right # put our left hand corner to the right hand corner
+                self.vx = 0 #redundant
+                self.rect.x = self.x
+
+        if dir == "y": #analgous to x case
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vy > 0: #if moving down during collision
+                    self.y = hits[0].rect.top - self.rect.height 
+                if self.vy < 0: #if moving up during collision
+                    self.y = hits[0].rect.bottom 
+                self.vy = 0 #redundant
+                self.rect.y = self.y
 
     def update(self):
-        self.rect.x = self.x * TILESIZE
-        self.rect.y = self.y * TILESIZE
+        self.get_keys()
+        self.x += self.vx * self.game.dt
+        self.y += self.vy * self.game.dt
+        self.rect.x = self.x 
+        self.collide('x')
+        self.rect.y = self.y
+        self.collide('y') 
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
