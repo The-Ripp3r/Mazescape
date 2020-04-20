@@ -9,3 +9,9 @@ are in the map so the player guesses their location by using their limited field
 In short, mode 1 is the localization mode, and is designed to teach that a robot's perspective only sees segments of the environment and updates predictions with each new piece of information.  Mode 2 removes the map but this time the enviornment has pre-designed unique landmarks distributed throughout the enviornment.  Mode 2 is the SLAM mode, and is designed to impart the concept of loop closure via landmarks.
 
 Libraries used: pygame, os, sys
+
+## Running the game
+1) Install python3
+2) Install [pygame](https://www.pygame.org/wiki/GettingStarted#Pygame%20Installation)
+3) Clone the repo
+4) `python3 main.py`
