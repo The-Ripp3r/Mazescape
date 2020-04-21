@@ -13,6 +13,9 @@ YELLOW = (255, 255, 0)
 #update: I changed the window screen to be comparable to a nintendo DS screen to emulate pokemon
 # the maps are currently 32x32 tiles but we can increase that to arbitrary dimensions
 # I wanted 24*16 with a tile size of 32 pixels bc that would allow 24x24 pixel or 32x32 pixel sprites
+VISION_RADIUS = 100
+SPAWN_X = 10
+SPAWN_Y = 10
 
 
 WIDTH = 768   # 16 * 64 or 32 * 32 or 64 * 16; 1024; I changed it to 32*24 so 24 tiles across
