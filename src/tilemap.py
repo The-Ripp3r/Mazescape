@@ -37,11 +37,11 @@ class Camera: #the idea here is to draw the map/drawing offset from the screen s
         y = -target.rect.y + int(HEIGHT / 2)
 
         #limits for camera scrolling to make sure player doesnt see beyond map
-        x = min(0, x) #makes sure offset is never bigger than 0, left
-        y = min(0, y) #top
-        # #x, y are in pixels so the mimimum that the offset can be is - (map width - screen size) offset is the left hand corner of the camera
-        x = max(-(self.width - WIDTH), x) #right
-        y = max(-(self.height-HEIGHT), y) #bottom
+        # x = min(0, x) #makes sure offset is never bigger than 0, left
+        # y = min(0, y) #top
+        # # #x, y are in pixels so the mimimum that the offset can be is - (map width - screen size) offset is the left hand corner of the camera
+        # x = max(-(self.width - WIDTH), x) #right
+        # y = max(-(self.height-HEIGHT), y) #bottom
 
         self.camera = pg.Rect(x, y, self.width, self.height)
         
