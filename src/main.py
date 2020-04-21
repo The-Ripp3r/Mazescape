@@ -56,7 +56,7 @@ class Game:
 
         #win condition
         if pg.sprite.spritecollide(self.player, self.win, False):
-            self.game.quit_game()
+            self.quit_game()
                 
     def update(self):
         self.all_sprites.update() #*************
