@@ -16,7 +16,9 @@ class Map:
                     if tile == "1":
                         self.wall_locs[col, row] = True
                     if tile == "P":
-                        self.player_loc = (col, row)    
+                        self.player_loc = (col, row)   
+                    if tile == "G":
+                        self.goal = (col, row) 
                     col += 1
                 self.tile_width = col
                 row += 1

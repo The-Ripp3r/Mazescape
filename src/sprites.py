@@ -63,6 +63,10 @@ class Player(pg.sprite.Sprite):
         self.rect.y = self.y
         self.collide('y') 
 
+        # #win condition
+        # if pg.sprite.spritecollide(self, self.game.win, False):
+        #     self.game.quit_game()
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups= game.all_sprites, game.walls
@@ -70,6 +74,19 @@ class Wall(pg.sprite.Sprite):
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(GREEN)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = self.x * TILESIZE
+        self.rect.y = self.y * TILESIZE
+
+class Goal(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups= game.all_sprites, game.win
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(DARKRED)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y

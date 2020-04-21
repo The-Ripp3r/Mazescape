@@ -17,13 +17,15 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        self.map = Map(path.join(self.folder, 'maps/map.txt'))
+        self.map = Map(path.join(self.folder, 'maps/research_map.txt'))
 
     def new(self):
         #init all vars and do all setup for a new game
         self.all_sprites = pg.sprite.Group() #a container class to hold multiple Sprite obj
         self.walls = pg.sprite.Group() #a container class to hold multiple Wall obj
+        self.win = pg.sprite.Group() #a container class to hold win conditions
         self.player = Player(self, self.map.player_loc[0], self.map.player_loc[1])
+        self.goal = Goal(self, self.map.goal[0], self.map.goal[1])
         for loc in self.map.wall_locs:
             Wall(self, loc[0], loc[1])
         
@@ -51,6 +53,10 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit_game()
+
+        #win condition
+        if pg.sprite.spritecollide(self.player, self.win, False):
+            self.game.quit_game()
                 
     def update(self):
         self.all_sprites.update() #*************
@@ -72,6 +78,8 @@ class Game:
         for r in range(VISION_RADIUS, 600):
             pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         pg.display.flip() #update the full display surface to the screen
+
+
 
     def show_start_screen(self):
         pass

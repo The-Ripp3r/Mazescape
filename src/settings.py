@@ -8,6 +8,7 @@ LIGHTGREY = (100, 100, 100)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+DARKRED = (139, 0, 0)
 
 # game settings
 #update: I changed the window screen to be comparable to a nintendo DS screen to emulate pokemon
@@ -15,7 +16,7 @@ YELLOW = (255, 255, 0)
 # I wanted 24*16 with a tile size of 32 pixels bc that would allow 24x24 pixel or 32x32 pixel sprites
 VISION_RADIUS = 100
 SPAWN_X = 10
-SPAWN_Y = 10
+SPAWN_Y = 10 #default; shouldn't need bc the map should have a span location
 
 
 WIDTH = 768   # 16 * 64 or 32 * 32 or 64 * 16; 1024; I changed it to 32*24 so 24 tiles across
