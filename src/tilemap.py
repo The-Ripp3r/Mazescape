@@ -6,7 +6,7 @@ class Map:
 
     def __init__(self, filename):
         self.wall_locs = {}
-        self.player_loc = (1, 1)
+        self.player_loc = (SPAWN_X, SPAWN_Y)
         with open(filename, 'rt') as f:
                 #loads map file and stores wall locations and player location
             row = 0
