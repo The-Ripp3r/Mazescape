@@ -49,12 +49,15 @@ class Game:
         :param self.camera: (Camera) represents the camera on the map
         """
         self.all_sprites = pg.sprite.Group() 
-        self.walls = pg.sprite.Group() 
+        self.walls = pg.sprite.Group()
+        self.teleports = pg.sprite.Group() 
         self.win = pg.sprite.Group() 
         self.player = Player(self, self.map.player_loc[0], self.map.player_loc[1])
         self.goal = Goal(self, self.map.goal[0], self.map.goal[1])
         for loc in self.map.wall_locs:
             Wall(self, loc[0], loc[1])
+        for loc in self.map.teleport_locs:
+            Teleport(self, loc[0], loc[1])
         
         self.camera = Camera(self.map.width, self.map.height)
 
@@ -85,7 +88,7 @@ class Game:
         """
         Catches all game-related events
         """
-        #catch all events here
+        #   catch all events here
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.quit_game()
@@ -93,9 +96,18 @@ class Game:
                 if event.key == pg.K_ESCAPE:
                     self.quit_game()
 
-        #win condition
+        #   win condition
         if pg.sprite.spritecollide(self.player, self.win, False):
             self.game.quit_game()
+        
+        #   teleportation
+        tel_block_hit = pg.sprite.spritecollide(self.player, self.teleports, False)
+        if tel_block_hit:
+            #   Find the other teleport block
+            other_teleport = [i for i in self.teleports.sprites() if i != tel_block_hit[0]][0]
+            self.player.x = (other_teleport.x + 1) * TILESIZE
+            self.player.y = other_teleport.y * TILESIZE
+
                 
     def update(self):
         """
@@ -125,8 +137,8 @@ class Game:
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         #   Reduce vision of the map
-        for r in range(VISION_RADIUS, 600):
-            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        # for r in range(VISION_RADIUS, 600):
+        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         pg.display.flip() #update the full display surface to the screen
 
 

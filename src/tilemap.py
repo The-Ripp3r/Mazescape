@@ -3,9 +3,9 @@ import pygame as pg
 from settings import *
 
 class Map:
-
     def __init__(self, filename):
         self.wall_locs = {}
+        self.teleport_locs = {}
         self.player_loc = (SPAWN_X, SPAWN_Y)
         with open(filename, 'rt') as f:
                 #loads map file and stores wall locations and player location
@@ -19,6 +19,8 @@ class Map:
                         self.player_loc = (col, row)   
                     if tile == "G":
                         self.goal = (col, row) 
+                    if tile == "T":
+                        self.teleport_locs[col, row] = True
                     col += 1
                 self.tile_width = col
                 row += 1
