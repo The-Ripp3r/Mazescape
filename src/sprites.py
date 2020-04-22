@@ -81,7 +81,7 @@ class Wall(pg.sprite.Sprite):
         self.rect.y = self.y * TILESIZE
 
 class Teleport(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, filename):
         self.groups = game.all_sprites, game.teleports
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -92,6 +92,10 @@ class Teleport(pg.sprite.Sprite):
         self.y = y
         self.rect.x = self.x * TILESIZE
         self.rect.y = self.y * TILESIZE
+
+        with open(filename, 'rt') as f:
+            destinations = eval(f.read())
+            self.tp_x, self.tp_y = destinations[(self.x, self.y)]
 
 class Goal(pg.sprite.Sprite):
     def __init__(self, game, x, y):

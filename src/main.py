@@ -24,18 +24,20 @@ class Game:
         self.clock = pg.time.Clock()
         # pg.key.set_repeat(250, 100)
         self.folder = path.dirname(__file__)
-        self.load_data('research_map')
+        self.load_data('research_map', 'research_map_tp')
 
-    def load_data(self, map_name):
+    def load_data(self, map_name, tp_name):
         """
         Loads data for a specific game level.
         
-        :param self.map: (Map) represents the map of the maze
         :param map_name: (str) name of the map without the extension (e.g. 'research_map'). 
                                map_name is a .txt located in map subfolder of self.folder.
+        :param self.map: (Map) represents the map of the maze
+        :param self.teleport_map: (str) path to file that maps teleport locations 
         """
         map_loc = 'maps/' + map_name + '.txt'
         self.map = Map(path.join(self.folder, map_loc))
+        self.teleport_map = 'maps/' + tp_name + '.txt'
 
     def new(self):
         """
@@ -43,6 +45,7 @@ class Game:
 
         :param self.all_sprites: (Group) container class to hold multiple Sprite objects
         :param self.walls: (Group) container class to hold multiple Wall objects
+        :param self.teleports: (Group) container class to hold multiple Teleport objects
         :param self.win: (Group) container class to hold win conditions
         :param self.player: (Player) represents the player on the map
         :param self.goal: (Goal) represents the goal on the map
@@ -57,7 +60,7 @@ class Game:
         for loc in self.map.wall_locs:
             Wall(self, loc[0], loc[1])
         for loc in self.map.teleport_locs:
-            Teleport(self, loc[0], loc[1])
+            Teleport(self, loc[0], loc[1], self.teleport_map)
         
         self.camera = Camera(self.map.width, self.map.height)
 
@@ -98,13 +101,14 @@ class Game:
 
         #   win condition
         if pg.sprite.spritecollide(self.player, self.win, False):
-            self.game.quit_game()
+            self.quit_game()
         
         #   teleportation
         tel_block_hit = pg.sprite.spritecollide(self.player, self.teleports, False)
         if tel_block_hit:
             #   Find the other teleport block
-            other_teleport = [i for i in self.teleports.sprites() if i != tel_block_hit[0]][0]
+            destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
+            #   Adjust the destination by considering player's movement
             x_modifier = 0
             if self.player.vx > 0:
                 x_modifier = 1
@@ -115,8 +119,8 @@ class Game:
                 y_modifier = 1
             elif self.player.vy < 0:
                 y_modifier = -1
-            self.player.x = (other_teleport.x + x_modifier) * TILESIZE
-            self.player.y = (other_teleport.y + y_modifier) * TILESIZE
+            self.player.x = (destination_x + x_modifier) * TILESIZE
+            self.player.y = (destination_y + y_modifier) * TILESIZE
 
                 
     def update(self):
@@ -150,8 +154,6 @@ class Game:
         # for r in range(VISION_RADIUS, 600):
         #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         pg.display.flip() #update the full display surface to the screen
-
-
 
     def show_start_screen(self):
         """
