@@ -102,6 +102,7 @@ class Game:
         #   win condition
         if pg.sprite.spritecollide(self.player, self.win, False):
             self.quit_game()
+
         
         #   teleportation
         tel_block_hit = pg.sprite.spritecollide(self.player, self.teleports, False)
