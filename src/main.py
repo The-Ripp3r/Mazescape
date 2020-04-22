@@ -105,8 +105,18 @@ class Game:
         if tel_block_hit:
             #   Find the other teleport block
             other_teleport = [i for i in self.teleports.sprites() if i != tel_block_hit[0]][0]
-            self.player.x = (other_teleport.x + 1) * TILESIZE
-            self.player.y = other_teleport.y * TILESIZE
+            x_modifier = 0
+            if self.player.vx > 0:
+                x_modifier = 1
+            elif self.player.vx < 0:
+                x_modifier = -1
+            y_modifier = 0
+            if self.player.vy > 0:
+                y_modifier = 1
+            elif self.player.vy < 0:
+                y_modifier = -1
+            self.player.x = (other_teleport.x + x_modifier) * TILESIZE
+            self.player.y = (other_teleport.y + y_modifier) * TILESIZE
 
                 
     def update(self):
