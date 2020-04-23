@@ -15,6 +15,7 @@ class Game:
             screen (Surface): the screen for the game
             clock (Clock): clock to keep track of time
             folder (str): directory for this file
+            dt (milliseconds): the time increments 
     
         Map Data:
             map (Map): represents the map of the maze
@@ -150,13 +151,13 @@ class Game:
         Draws the given map level by layering all the sprites.
         """
         self.screen.fill(BGCOLOR)
-        self.draw_grid()
+        # self.draw_grid()
         #   Layer all sprites
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         #   Reduce vision of the map
-        for r in range(VISION_RADIUS, 600):
-            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        # for r in range(VISION_RADIUS, 600):
+        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         pg.display.flip() #update the full display surface to the screen
 
     def show_start_screen(self):

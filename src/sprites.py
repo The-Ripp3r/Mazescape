@@ -11,12 +11,12 @@ class Player(pg.sprite.Sprite):
         game (Game): the game Player is part of
         image (Surface): the image of the Player sprite
         rect (Rect): a Rect object representing the Player sprite
-        vx (float): the x direction velocity of the player object in the game, 
-            where >0 means to the right
-        vy (float): the y direction velocity of the player object in the game,
-            where >0 means upwards
-        x (float): the x location of the player sprite relative to the game
-        y (float): the y locaiton of the player sprite relative to the game
+        vx (float): the x direction velocity of the player object in the game in pixels 
+            per second, where >0 means to the right
+        vy (float): the y direction velocity of the player object in the game in pixels
+            per second, where >0 means upwards
+        x (float): the x pixel location of the player sprite
+        y (float): the y pixel locaiton of the player sprite
     """
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
@@ -31,6 +31,8 @@ class Player(pg.sprite.Sprite):
         self.vy = 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
+        self.rect.x = self.x
+        self.rect.y = self.y
     
 
     def get_keys(self):
@@ -54,7 +56,7 @@ class Player(pg.sprite.Sprite):
     def collide(self, dir):
         """
         Handles collisions between the Player sprite and Wall Sprite. 
-        Updates the coordinates of the player sprite relative to the game.
+        Updates the pixel location of the player sprite.
 
         Args:
             dir (str): direction of the sprite collisions, either "x" or "y"
@@ -81,7 +83,7 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         """
-        Updates the x and y coordinates of the player relative to the game
+        Updates the x and y pixel coordinates of the player
         based on the velocities.
         """
         self.get_keys()
@@ -97,6 +99,17 @@ class Player(pg.sprite.Sprite):
         #     self.game.quit_game()
 
 class Wall(pg.sprite.Sprite):
+    """
+    Represents a wall sprite of a maze in Mazescape.
+
+    Attributes:
+        groups (Group): the sprite group container classes Wall is part of
+        game (Game): the game Wall is part of
+        image (Surface): the image of the Wall sprite
+        rect (Rect): a Rect object representing the Wall sprite
+        x (float): the x pixel location of the wall sprite
+        y (float): the y pixel locaiton of the wall sprite
+    """
     def __init__(self, game, x, y):
         self.groups= game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -104,10 +117,10 @@ class Wall(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.x = self.x * TILESIZE
-        self.rect.y = self.y * TILESIZE
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.rect.x = self.x
+        self.rect.y = self.y
 
 class Teleport(pg.sprite.Sprite):
     def __init__(self, game, x, y, filename):
@@ -117,12 +130,14 @@ class Teleport(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.x = self.x * TILESIZE
-        self.rect.y = self.y * TILESIZE
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.rect.x = self.x
+        self.rect.y = self.y
 
         with open(filename, 'rt') as f:
+            #   destinations is a dict mapping each tilemap teleport coordinate to
+            #   the destination tilemap coordinate
             destinations = eval(f.read())
             self.tp_x, self.tp_y = destinations[(self.x, self.y)]
 
@@ -134,7 +149,7 @@ class Goal(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(DARKRED)
         self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.x = self.x * TILESIZE
-        self.rect.y = self.y * TILESIZE
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.rect.x = self.x
+        self.rect.y = self.y
