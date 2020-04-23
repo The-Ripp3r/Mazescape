@@ -153,6 +153,17 @@ class Teleport(pg.sprite.Sprite):
             self.tp_x, self.tp_y = destinations[(self.x, self.y)]
 
 class Goal(pg.sprite.Sprite):
+    """
+    Represents a Goal sprite of a maze in Mazescape.
+
+    Attributes:
+        groups (Group): the sprite group container classes Goal is part of
+        game (Game): the game Goal is part of
+        image (Surface): the image of the Goal sprite
+        rect (Rect): a Rect object representing the Goal sprite
+        x (float): the x pixel location of the Goal sprite
+        y (float): the y pixel locaiton of the Goal sprite
+    """
     def __init__(self, game, x, y):
         self.groups= game.all_sprites, game.win
         pg.sprite.Sprite.__init__(self, self.groups)
