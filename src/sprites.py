@@ -3,6 +3,21 @@ import pygame as pg
 from settings import *
 
 class Player(pg.sprite.Sprite):
+    """
+    Represents the main player sprite in Mazescape.
+
+    Attributes:
+        groups (Group): the sprite group container classes Player is part of
+        game (Game): the game Player is part of
+        image (Surface): the image of the Player sprite
+        rect (Rect): a Rect object representing the Player sprite
+        vx (float): the x direction velocity of the player object in the game, 
+            where >0 means to the right
+        vy (float): the y direction velocity of the player object in the game,
+            where >0 means upwards
+        x (float): the x location of the player sprite relative to the game
+        y (float): the y locaiton of the player sprite relative to the game
+    """
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -19,6 +34,9 @@ class Player(pg.sprite.Sprite):
     
 
     def get_keys(self):
+        """
+        Updates Player velocity based on the key pressed by the user
+        """
         self.vx, self.vy = 0, 0
         keys=pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
@@ -34,6 +52,13 @@ class Player(pg.sprite.Sprite):
             self.vy *= 0.7071
 
     def collide(self, dir):
+        """
+        Handles collisions between the Player sprite and Wall Sprite. 
+        Updates the coordinates of the player sprite relative to the game.
+
+        Args:
+            dir (str): direction of the sprite collisions, either "x" or "y"
+        """
         if dir == "x":
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
@@ -55,6 +80,10 @@ class Player(pg.sprite.Sprite):
                 self.rect.y = self.y
 
     def update(self):
+        """
+        Updates the x and y coordinates of the player relative to the game
+        based on the velocities.
+        """
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
