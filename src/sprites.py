@@ -123,6 +123,17 @@ class Wall(pg.sprite.Sprite):
         self.rect.y = self.y
 
 class Teleport(pg.sprite.Sprite):
+    """
+    Represents a Teleport sprite of a maze in Mazescape.
+
+    Attributes:
+        groups (Group): the sprite group container classes Teleport is part of
+        game (Game): the game Teleport is part of
+        image (Surface): the image of the Teleport sprite
+        rect (Rect): a Rect object representing the Teleport sprite
+        x (float): the x pixel location of the Teleport sprite
+        y (float): the y pixel locaiton of the Teleport sprite
+    """
     def __init__(self, game, x, y, filename):
         self.groups = game.all_sprites, game.teleports
         pg.sprite.Sprite.__init__(self, self.groups)
