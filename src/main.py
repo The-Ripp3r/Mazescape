@@ -156,8 +156,8 @@ class Game:
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         #   Reduce vision of the map
-        # for r in range(VISION_RADIUS, 600):
-        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        for r in range(VISION_RADIUS, 600):
+            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         pg.display.flip() #update the full display surface to the screen
 
     def show_start_screen(self):

@@ -150,7 +150,8 @@ class Teleport(pg.sprite.Sprite):
             #   destinations is a dict mapping each tilemap teleport coordinate to
             #   the destination tilemap coordinate
             destinations = eval(f.read())
-            self.tp_x, self.tp_y = destinations[(self.x, self.y)]
+            tp_map_x, tp_map_y = self.x/TILESIZE, self.y/TILESIZE
+            self.tp_x, self.tp_y = destinations[(tp_map_x, tp_map_y)]
 
 class Goal(pg.sprite.Sprite):
     """
