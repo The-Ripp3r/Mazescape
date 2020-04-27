@@ -8,16 +8,29 @@ from tilemap import *
 
 class Game:
     """
-    Represents the Mazescape game
+    Represents the Mazescape game.
+
+    Attributes:
+        General Game Settings:
+            screen (Surface): the screen for the game
+            clock (Clock): clock to keep track of time
+            folder (str): directory for this file
+            dt (milliseconds): the time increments 
+    
+        Map Data:
+            map (Map): represents the map of the maze
+            teleport_map (str): path to file that has dict of teleport locations 
+        
+        Maze Level Data:
+            all_sprites (Group): container class to hold multiple Sprite objects
+            walls (Group): container class to hold multiple Wall objects
+            teleports (Group): container class to hold multiple Teleport objects
+            win (Group): container class to hold win conditions
+            player (Player): represents the player on the map
+            goal (Goal): represents the goal on the map
+            camera (Camera): represents the camera on the map
     """
     def __init__(self):
-        """
-        Initialize Game settings.
-
-        :param self.screen: (Surface) the screen for the game
-        :param self.clock: (Clock) clock to keep track of time
-        :param self.folder: (str) directory for this file
-        """
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
@@ -29,12 +42,14 @@ class Game:
 
     def load_data(self, map_name, tp_name):
         """
-        Loads data for a specific game level.
-        
-        :param map_name: (str) name of the map without the extension (e.g. 'research_map'). 
-                               map_name is a .txt located in map subfolder of self.folder.
-        :param self.map: (Map) represents the map of the maze
-        :param self.teleport_map: (str) path to file that maps teleport locations 
+        Loads data for a specific game map level.
+
+        Args:
+            map_name (str): name of the map without the extension (e.g. 'research_map'). 
+                map_name is a .txt located in map subfolder of self.folder.
+            tp_name (str): name of the file without the extension (e.g. 'reserach_map_tp').
+                maps coordinates of teleport tiles to each other in pairs.
+                tp_name is a .txt located in map subfolder of self.folder.
         """
         map_loc = 'maps/' + map_name + '.txt'
         self.map = Map(path.join(self.game_folder, map_loc))
@@ -43,15 +58,7 @@ class Game:
 
     def new(self):
         """
-        Initialize and setup a new game level
-
-        :param self.all_sprites: (Group) container class to hold multiple Sprite objects
-        :param self.walls: (Group) container class to hold multiple Wall objects
-        :param self.teleports: (Group) container class to hold multiple Teleport objects
-        :param self.win: (Group) container class to hold win conditions
-        :param self.player: (Player) represents the player on the map
-        :param self.goal: (Goal) represents the goal on the map
-        :param self.camera: (Camera) represents the camera on the map
+        Initialize and setup a new maze level.
         """
         self.all_sprites = pg.sprite.Group() 
         self.walls = pg.sprite.Group()
@@ -70,9 +77,6 @@ class Game:
     def run(self):
         """
         Runs the Mazescape game.
-
-        :param self.playing: (bool) if the player is playing the game
-        :param self.dt: (int) the framerate of the game
         """
         #game loop set self.playing to False to end game
         self.playing = True
@@ -149,13 +153,13 @@ class Game:
         Draws the given map level by layering all the sprites.
         """
         self.screen.fill(BGCOLOR)
-        self.draw_grid()
+        # self.draw_grid()
         #   Layer all sprites
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         #   Reduce vision of the map
-        # for r in range(VISION_RADIUS, 600):
-        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        for r in range(VISION_RADIUS, 600):
+            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         pg.display.flip() #update the full display surface to the screen
 
     def show_start_screen(self):
