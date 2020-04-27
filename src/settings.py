@@ -31,3 +31,4 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 
 #player settings
 PLAYERSPEED = 300
+PLAYER_IMG = "player_walk1.png"

@@ -36,7 +36,8 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         # pg.key.set_repeat(250, 100)
-        self.folder = path.dirname(__file__)
+        self.game_folder = path.dirname(__file__)
+        self.sprite_folder = path.join(self.game_folder, 'sprites')
         self.load_data('research_map', 'research_map_tp')
 
     def load_data(self, map_name, tp_name):
@@ -51,8 +52,9 @@ class Game:
                 tp_name is a .txt located in map subfolder of self.folder.
         """
         map_loc = 'maps/' + map_name + '.txt'
-        self.map = Map(path.join(self.folder, map_loc))
+        self.map = Map(path.join(self.game_folder, map_loc))
         self.teleport_map = 'maps/' + tp_name + '.txt'
+        self.player_img = pg.image.load(path.join(self.sprite_folder, PLAYER_IMG)).convert_alpha()
 
     def new(self):
         """
@@ -115,17 +117,17 @@ class Game:
             destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
             #   Adjust the destination by considering player's movement
             x_modifier = 0
-            if self.player.vx > 0:
+            if self.player.vel.x > 0:
                 x_modifier = 1
-            elif self.player.vx < 0:
+            elif self.player.vel.x < 0:
                 x_modifier = -1
             y_modifier = 0
-            if self.player.vy > 0:
+            if self.player.vel.y > 0:
                 y_modifier = 1
-            elif self.player.vy < 0:
+            elif self.player.vel.y < 0:
                 y_modifier = -1
-            self.player.x = (destination_x + x_modifier) * TILESIZE
-            self.player.y = (destination_y + y_modifier) * TILESIZE
+            self.player.pos.x = (destination_x + x_modifier) * TILESIZE
+            self.player.pos.y = (destination_y + y_modifier) * TILESIZE
 
                 
     def update(self):

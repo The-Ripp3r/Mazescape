@@ -1,6 +1,8 @@
 '''Sprites'''
 import pygame as pg
 from settings import *
+vec = pg.math.Vector2
+
 
 class Player(pg.sprite.Sprite):
     """
@@ -22,36 +24,25 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        self.image = game.player_img
         self.rect = self.image.get_rect()
-        #coordinates on the grid
-        #x, y represent the top left hand corner of the image obj that is being drawn
-        self.vx = 0
-        self.vy = 0
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.vel = vec(0, 0)
+        self.pos = vec(x, y) * TILESIZE
     
 
     def get_keys(self):
-        """
-        Updates Player velocity based on the key pressed by the user
-        """
-        self.vx, self.vy = 0, 0
+        self.vel = vec(0, 0)
         keys=pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.vx = -PLAYERSPEED
+            self.vel.x = -PLAYERSPEED
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vx = PLAYERSPEED
+            self.vel.x = PLAYERSPEED
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vy = PLAYERSPEED
+            self.vel.y = PLAYERSPEED
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vy = -PLAYERSPEED
-        if self.vx!=0 and self.vy!=0:
-            self.vx *= 0.7071 #pythagorean theorem if it was v speed in one direction and you want to break it up into x and y; ensures diagonal speed isnt too fast
-            self.vy *= 0.7071
+            self.vel.y = -PLAYERSPEED
+        if self.vel.x != 0 and self.vel.y != 0:
+            self.vel *= 0.7071 #pythagorean theorem if it was v speed in one direction and you want to break it up into x and y; ensures diagonal speed isnt too fast
 
     def collide(self, dir):
         """
@@ -64,22 +55,22 @@ class Player(pg.sprite.Sprite):
         if dir == "x":
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
-                if self.vx > 0: #if moving to the right during collision
-                    self.x = hits[0].rect.left - self.rect.width #put our left hand corner to the left hand corner of the object we hit and shift ourselves outside of tht object
-                if self.vx < 0: #if moving to the left during collision
-                    self.x = hits[0].rect.right # put our left hand corner to the right hand corner
-                self.vx = 0 #redundant
-                self.rect.x = self.x
+                if self.vel.x > 0: #if moving to the right during collision
+                    self.pos.x = hits[0].rect.left - self.rect.width #put our left hand corner to the left hand corner of the object we hit and shift ourselves outside of tht object
+                if self.vel.x < 0: #if moving to the left during collision
+                    self.pos.x = hits[0].rect.right # put our left hand corner to the right hand corner
+                self.vel.x = 0 #redundant
+                self.rect.x = self.pos.x
 
         if dir == "y": #analgous to x case
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
-                if self.vy > 0: #if moving down during collision
-                    self.y = hits[0].rect.top - self.rect.height 
-                if self.vy < 0: #if moving up during collision
-                    self.y = hits[0].rect.bottom 
-                self.vy = 0 #redundant
-                self.rect.y = self.y
+                if self.vel.y > 0: #if moving down during collision
+                    self.pos.y = hits[0].rect.top - self.rect.height 
+                if self.vel.y < 0: #if moving up during collision
+                    self.pos.y = hits[0].rect.bottom 
+                self.vel.y = 0 #redundant
+                self.rect.y = self.pos.y
 
     def update(self):
         """
@@ -87,11 +78,10 @@ class Player(pg.sprite.Sprite):
         based on the velocities.
         """
         self.get_keys()
-        self.x += self.vx * self.game.dt
-        self.y += self.vy * self.game.dt
-        self.rect.x = self.x 
+        self.pos += self.vel * self.game.dt
+        self.rect.x = self.pos.x
         self.collide('x')
-        self.rect.y = self.y
+        self.rect.y = self.pos.y
         self.collide('y') 
 
         # #win condition
@@ -117,10 +107,8 @@ class Wall(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
 
 class Teleport(pg.sprite.Sprite):
     """
@@ -141,17 +129,14 @@ class Teleport(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
 
         with open(filename, 'rt') as f:
             #   destinations is a dict mapping each tilemap teleport coordinate to
             #   the destination tilemap coordinate
             destinations = eval(f.read())
-            tp_map_x, tp_map_y = self.x/TILESIZE, self.y/TILESIZE
-            self.tp_x, self.tp_y = destinations[(tp_map_x, tp_map_y)]
+            self.tp_x, self.tp_y = destinations[(self.rect.x/TILESIZE, self.rect.y/TILESIZE)] #destination pt
 
 class Goal(pg.sprite.Sprite):
     """
@@ -172,7 +157,5 @@ class Goal(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(DARKRED)
         self.rect = self.image.get_rect()
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
