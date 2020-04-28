@@ -18,7 +18,6 @@ VISION_RADIUS = 150
 SPAWN_X = 10
 SPAWN_Y = 10 #default; shouldn't need bc the map should have a span location
 
-
 WIDTH = 768   # 16 * 64 or 32 * 32 or 64 * 16; 1024; I changed it to 32*24 so 24 tiles across
 HEIGHT = 512  # 16 * 48 or 32 * 24 or 64 * 12; 768; I changed it to 32*16  so 16 tiles down
 FPS = 60

@@ -19,6 +19,7 @@ class Game:
     
         Map Data:
             map (Map): represents the map of the maze
+            minimap (Surface): the minimap of the maze
             teleport_map (str): path to file that has dict of teleport locations 
         
         Maze Level Data:
@@ -27,6 +28,7 @@ class Game:
             teleports (Group): container class to hold multiple Teleport objects
             win (Group): container class to hold win conditions
             player (Player): represents the player on the map
+            player_img (Surface): image of the player 
             goal (Goal): represents the goal on the map
             camera (Camera): represents the camera on the map
     """
@@ -38,21 +40,26 @@ class Game:
         # pg.key.set_repeat(250, 100)
         self.game_folder = path.dirname(__file__)
         self.sprite_folder = path.join(self.game_folder, 'sprites')
-        self.load_data('research_map', 'research_map_tp')
+        self.load_data('research_map', 'out', 'research_map_tp')
 
-    def load_data(self, map_name, tp_name):
+    def load_data(self, map_name, minimap_name, tp_name):
         """
         Loads data for a specific game map level.
 
         Args:
             map_name (str): name of the map without the extension (e.g. 'research_map'). 
                 map_name is a .txt located in map subfolder of self.folder.
+            minimap_name (str): name of the minimap without the extension (e.g. 'research_minimap'). 
+                minimap_name is a .png located in map subfolder of self.folder.
             tp_name (str): name of the file without the extension (e.g. 'reserach_map_tp').
                 maps coordinates of teleport tiles to each other in pairs.
                 tp_name is a .txt located in map subfolder of self.folder.
         """
         map_loc = 'maps/' + map_name + '.txt'
         self.map = Map(path.join(self.game_folder, map_loc))
+        minimap_loc = 'maps/' + minimap_name + '.png'
+        self.minimap = pg.image.load(path.join(self.game_folder, minimap_loc)).convert_alpha()
+        self.minimap = pg.transform.scale(self.minimap, (WIDTH//5, HEIGHT//5))
         self.teleport_map = 'maps/' + tp_name + '.txt'
         self.player_img = pg.image.load(path.join(self.sprite_folder, PLAYER_IMG)).convert_alpha()
 
@@ -160,6 +167,8 @@ class Game:
         #   Reduce vision of the map
         for r in range(VISION_RADIUS, 600):
             pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        #   Layer on the minimap
+        self.screen.blit(self.minimap, [10, 10])
         pg.display.flip() #update the full display surface to the screen
 
     def show_start_screen(self):
