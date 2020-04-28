@@ -65,10 +65,11 @@ class Game:
             self.minimap = pg.image.load(path.join(self.game_folder, minimap_loc)).convert_alpha()
             self.minimap = pg.transform.scale(self.minimap, (WIDTH//3, HEIGHT//3))
         self.teleport_map = 'maps/' + tp_name + '.txt'
+        #images
         self.player_img = pg.image.load(path.join(self.sprite_folder, PLAYER_IMG)).convert_alpha()
-        x = self.player_img.get_width()
-        y = self.player_img.get_height()
-        self.player_img = pg.transform.scale(self.player_img, (2*x, 2*y))
+        # x = self.player_img.get_width()
+        # y = self.player_img.get_height()
+        # self.player_img = pg.transform.scale(self.player_img, (2*x, 2*y))
 
     def new(self):
         """
@@ -129,9 +130,14 @@ class Game:
         if tel_block_hit:
             #   Find the other teleport block
             destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
+            
+            destination_x+=0.5 #telelport goes by top left and the player is tracked by its center
+            destination_y+=0.5
+            
             #   Adjust the destination by considering player's movement
             x_modifier = 0
             if self.player.vel.x > 0:
+                print("JACK")
                 x_modifier = 1
             elif self.player.vel.x < 0:
                 x_modifier = -1
@@ -142,6 +148,10 @@ class Game:
                 y_modifier = -1
             self.player.pos.x = (destination_x + x_modifier) * TILESIZE
             self.player.pos.y = (destination_y + y_modifier) * TILESIZE
+
+            #BUGFIX
+            self.player.rect.centerx= int(self.player.pos.x)
+            self.player.rect.centery= int(self.player.pos.y)
 
                 
     def update(self):
@@ -167,7 +177,7 @@ class Game:
         Draws the given map level by layering all the sprites.
         """
         self.screen.fill(BGCOLOR)
-        # self.draw_grid()
+        self.draw_grid()
         #   Layer all sprites
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))

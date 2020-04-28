@@ -64,15 +64,8 @@ class Camera:
         as its location so the camera is the opposite of player movement.
         """
         #remember the camera doesnt move in respect to the world
-        x = -target.rect.x + int(WIDTH / 2)
-        y = -target.rect.y + int(HEIGHT / 2)
-
-        #limits for camera scrolling to make sure player doesnt see beyond map
-        # x = min(0, x) #makes sure offset is never bigger than 0, left
-        # y = min(0, y) #top
-        # # #x, y are in pixels so the mimimum that the offset can be is - (map width - screen size) offset is the left hand corner of the camera
-        # x = max(-(self.width - WIDTH), x) #right
-        # y = max(-(self.height-HEIGHT), y) #bottom
+        x = -target.rect.centerx + int(WIDTH / 2)
+        y = -target.rect.centery + int(HEIGHT / 2)
 
         self.camera = pg.Rect(x, y, self.width, self.height)
 
@@ -86,7 +79,7 @@ class Camera:
         
         Returns:
             A Rect, which is a new rectangle that is moved by the offset of
-            self.camera.topleft.
+            self.camera.topleft. It doesnt change the old one
         """
         return entity.rect.move(self.camera.topleft)
 

@@ -10,7 +10,7 @@ from settings import *
 # -----------------------------------------------------------------------------
 CREATORS = ['Carrie Laber-Smith: {0}'.format('Narrative Designer'), 
             'Kevin Jiang: {0}'.format('Chief Designer'), 
-            'Jack Rivers: {0}'.format('Chief Engineer'), 
+            'Edward Rivera (aka Jack The-Ripp3r): {0}'.format('Chief Engineer'), 
             'Michelle Tan: {0}'.format('Project Manager')]
 COLOR_BACKGROUND = (0, 0, 0)
 COLOR_BLACK = (0, 0, 0)
@@ -39,7 +39,7 @@ def change_mode(value, color):
     :type value: tuple
     :return: None
     """
-    MODE[0] = value
+    MODE[0] = value[0]
 
 
 def play_function(game_function, mode):
