@@ -59,9 +59,12 @@ class Game:
         self.map = Map(path.join(self.game_folder, map_loc))
         minimap_loc = 'maps/' + minimap_name + '.png'
         self.minimap = pg.image.load(path.join(self.game_folder, minimap_loc)).convert_alpha()
-        self.minimap = pg.transform.scale(self.minimap, (WIDTH//5, HEIGHT//5))
+        self.minimap = pg.transform.scale(self.minimap, (WIDTH//3, HEIGHT//3))
         self.teleport_map = 'maps/' + tp_name + '.txt'
         self.player_img = pg.image.load(path.join(self.sprite_folder, PLAYER_IMG)).convert_alpha()
+        x = self.player_img.get_width()
+        y = self.player_img.get_height()
+        self.player_img = pg.transform.scale(self.player_img, (2*x, 2*y))
 
     def new(self):
         """

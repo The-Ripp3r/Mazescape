@@ -14,7 +14,7 @@ DARKRED = (139, 0, 0)
 #update: I changed the window screen to be comparable to a nintendo DS screen to emulate pokemon
 # the maps are currently 32x32 tiles but we can increase that to arbitrary dimensions
 # I wanted 24*16 with a tile size of 32 pixels bc that would allow 24x24 pixel or 32x32 pixel sprites
-VISION_RADIUS = 150
+VISION_RADIUS = 75
 SPAWN_X = 10
 SPAWN_Y = 10 #default; shouldn't need bc the map should have a span location
 
