@@ -9,6 +9,7 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 DARKRED = (139, 0, 0)
+LIGHTBLUE = (0, 191, 255)
 
 # game settings
 #update: I changed the window screen to be comparable to a nintendo DS screen to emulate pokemon
