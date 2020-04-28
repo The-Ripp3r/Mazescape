@@ -2,6 +2,7 @@
 import sys
 from os import path
 import pygame as pg
+from menu import *
 from settings import *
 from sprites import *
 from tilemap import *
@@ -174,19 +175,31 @@ class Game:
         self.screen.blit(self.minimap, [10, 10])
         pg.display.flip() #update the full display surface to the screen
 
-    def show_start_screen(self):
+    def draw_text(text, font, color, surface, x, y):
         """
-        Displays the Mazescape start screen
+        Draws text onto a given surface.
+
+        Args:
+            text (str): non-empty text to display
+            font (Font): the font to display the text in
+            surface (Surface): the surface to display text on
+            x (int): the top left x-coordinate for the text
+            y (int): the top left y-coordinate for the text
         """
-        pass
+        text_obj = font.render(text, 1, color)
+        text_rect = text_obj.get_rect()
+        text_rect.topleft = (x, y)
+        surface.blit(text_obj, text_rect)
 
     def show_go_screen(self):
         pass
 
-#create game
-g= Game()
-g.show_start_screen()
-while True:
-    g.new()
-    g.run()
-    g.show_go_screen()
+def run_game():
+    #create game
+    g= Game()
+    while True:
+        g.new()
+        g.run()
+        g.show_go_screen()
+
+run_menu(run_game)
