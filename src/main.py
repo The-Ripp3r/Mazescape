@@ -2,6 +2,7 @@
 import sys
 from os import path
 import pygame as pg
+from menu import *
 from settings import *
 from sprites import *
 from tilemap import *
@@ -19,6 +20,7 @@ class Game:
     
         Map Data:
             map (Map): represents the map of the maze
+            minimap (Surface): the minimap of the maze
             teleport_map (str): path to file that has dict of teleport locations 
         
         Maze Level Data:
@@ -27,10 +29,11 @@ class Game:
             teleports (Group): container class to hold multiple Teleport objects
             win (Group): container class to hold win conditions
             player (Player): represents the player on the map
+            player_img (Surface): image of the player 
             goal (Goal): represents the goal on the map
             camera (Camera): represents the camera on the map
     """
-    def __init__(self):
+    def __init__(self, mode):
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
@@ -38,23 +41,34 @@ class Game:
         # pg.key.set_repeat(250, 100)
         self.game_folder = path.dirname(__file__)
         self.sprite_folder = path.join(self.game_folder, 'sprites')
-        self.load_data('research_map', 'research_map_tp')
+        self.mode = mode
+        minimap = 'out' if mode == '1' else None
+        self.load_data('research_map', 'research_map_tp', minimap_name=minimap)
 
-    def load_data(self, map_name, tp_name):
+    def load_data(self, map_name, tp_name, minimap_name=None):
         """
         Loads data for a specific game map level.
 
         Args:
             map_name (str): name of the map without the extension (e.g. 'research_map'). 
                 map_name is a .txt located in map subfolder of self.folder.
+            minimap_name (str): name of the minimap without the extension (e.g. 'research_minimap'). 
+                minimap_name is a .png located in map subfolder of self.folder.
             tp_name (str): name of the file without the extension (e.g. 'reserach_map_tp').
                 maps coordinates of teleport tiles to each other in pairs.
                 tp_name is a .txt located in map subfolder of self.folder.
         """
         map_loc = 'maps/' + map_name + '.txt'
         self.map = Map(path.join(self.game_folder, map_loc))
+        if minimap_name != None:
+            minimap_loc = 'maps/' + minimap_name + '.png'
+            self.minimap = pg.image.load(path.join(self.game_folder, minimap_loc)).convert_alpha()
+            self.minimap = pg.transform.scale(self.minimap, (WIDTH//3, HEIGHT//3))
         self.teleport_map = 'maps/' + tp_name + '.txt'
         self.player_img = pg.image.load(path.join(self.sprite_folder, PLAYER_IMG)).convert_alpha()
+        x = self.player_img.get_width()
+        y = self.player_img.get_height()
+        self.player_img = pg.transform.scale(self.player_img, (2*x, 2*y))
 
     def new(self):
         """
@@ -160,21 +174,36 @@ class Game:
         #   Reduce vision of the map
         for r in range(VISION_RADIUS, 600):
             pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        #   Layer on the minimap if in mode 1
+        if self.mode == '1':
+            self.screen.blit(self.minimap, [10, 10])
         pg.display.flip() #update the full display surface to the screen
 
-    def show_start_screen(self):
+    def draw_text(self, text, font, color, surface, x, y):
         """
-        Displays the Mazescape start screen
+        Draws text onto a given surface.
+
+        Args:
+            text (str): non-empty text to display
+            font (Font): the font to display the text in
+            surface (Surface): the surface to display text on
+            x (int): the top left x-coordinate for the text
+            y (int): the top left y-coordinate for the text
         """
-        pass
+        text_obj = font.render(text, 1, color)
+        text_rect = text_obj.get_rect()
+        text_rect.topleft = (x, y)
+        surface.blit(text_obj, text_rect)
 
     def show_go_screen(self):
         pass
 
-#create game
-g= Game()
-g.show_start_screen()
-while True:
-    g.new()
-    g.run()
-    g.show_go_screen()
+def run_game(mode):
+    #create game
+    g= Game(mode)
+    while True:
+        g.new()
+        g.run()
+        g.show_go_screen()
+
+run_menu(run_game)
