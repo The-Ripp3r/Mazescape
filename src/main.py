@@ -33,7 +33,7 @@ class Game:
             goal (Goal): represents the goal on the map
             camera (Camera): represents the camera on the map
     """
-    def __init__(self):
+    def __init__(self, mode):
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
@@ -41,9 +41,11 @@ class Game:
         # pg.key.set_repeat(250, 100)
         self.game_folder = path.dirname(__file__)
         self.sprite_folder = path.join(self.game_folder, 'sprites')
-        self.load_data('research_map', 'out', 'research_map_tp')
+        self.mode = mode
+        minimap = 'out' if mode == '1' else None
+        self.load_data('research_map', 'research_map_tp', minimap_name=minimap)
 
-    def load_data(self, map_name, minimap_name, tp_name):
+    def load_data(self, map_name, tp_name, minimap_name=None):
         """
         Loads data for a specific game map level.
 
@@ -58,9 +60,10 @@ class Game:
         """
         map_loc = 'maps/' + map_name + '.txt'
         self.map = Map(path.join(self.game_folder, map_loc))
-        minimap_loc = 'maps/' + minimap_name + '.png'
-        self.minimap = pg.image.load(path.join(self.game_folder, minimap_loc)).convert_alpha()
-        self.minimap = pg.transform.scale(self.minimap, (WIDTH//3, HEIGHT//3))
+        if minimap_name != None:
+            minimap_loc = 'maps/' + minimap_name + '.png'
+            self.minimap = pg.image.load(path.join(self.game_folder, minimap_loc)).convert_alpha()
+            self.minimap = pg.transform.scale(self.minimap, (WIDTH//3, HEIGHT//3))
         self.teleport_map = 'maps/' + tp_name + '.txt'
         self.player_img = pg.image.load(path.join(self.sprite_folder, PLAYER_IMG)).convert_alpha()
         x = self.player_img.get_width()
@@ -171,11 +174,12 @@ class Game:
         #   Reduce vision of the map
         for r in range(VISION_RADIUS, 600):
             pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
-        #   Layer on the minimap
-        self.screen.blit(self.minimap, [10, 10])
+        #   Layer on the minimap if in mode 1
+        if self.mode == '1':
+            self.screen.blit(self.minimap, [10, 10])
         pg.display.flip() #update the full display surface to the screen
 
-    def draw_text(text, font, color, surface, x, y):
+    def draw_text(self, text, font, color, surface, x, y):
         """
         Draws text onto a given surface.
 
@@ -194,9 +198,9 @@ class Game:
     def show_go_screen(self):
         pass
 
-def run_game():
+def run_game(mode):
     #create game
-    g= Game()
+    g= Game(mode)
     while True:
         g.new()
         g.run()

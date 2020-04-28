@@ -55,20 +55,13 @@ def play_function(game_function, mode):
     """
     # Define globals
     global main_menu
-    global clock
-
-    if mode == '1':
-        pass
-    elif mode == '2':
-        pass
-    else:
-        raise Exception('Unknown mode {0}'.format(mode))
 
     # Reset main menu and disable
     # You also can set another menu, like a 'pause menu', or just use the same
     # main_menu as the menu that will check all your input.
     main_menu.disable()
-    game_function()
+    print(MODE[0])
+    game_function(MODE[0])
 
 def main_background():
     """
@@ -134,7 +127,7 @@ def run_menu(game_function):
     play_menu.add_selector('Select Mode',
                            [('1', GREEN),
                             ('2', YELLOW)],
-                           onreturn=change_mode,
+                           onchange=change_mode,
                            selector_id='select_mode')
     play_menu.add_button('Back', pygameMenu.events.BACK)
 
