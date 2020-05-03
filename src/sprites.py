@@ -155,7 +155,9 @@ class Mirror(pg.sprite.Sprite):
         self.rect = pg.Rect(x, y, w, h)
         self.rect.x = x 
         self.rect.y = y 
-        #self.tp_x, self.tp_y = destinations[(self.rect.x/TILESIZE, self.rect.y/TILESIZE)] #destination pt
+        print(x,y)
+        print(destinations)
+        self.tp_x, self.tp_y = destinations[(int(self.rect.x/TILESIZE), int(self.rect.y/TILESIZE))] #destination pt
 
 class Wall(pg.sprite.Sprite):
     """

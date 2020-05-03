@@ -45,7 +45,7 @@ class Game:
         #set mode
         self.mode = mode
         minimap = 'out.png' if mode == '1' else None
-        self.load_data('mvp_map.tmx', 'research_map_tp.txt', minimap_name=minimap)
+        self.load_data('mvp_map.tmx', 'mvp_map_tp.txt', minimap_name=minimap)
 
     def load_data(self, map_name, tp_name, minimap_name=None):
         """
@@ -148,32 +148,32 @@ class Game:
             self.quit_game()
 
         
-        # #   teleportation
-        # tel_block_hit = pg.sprite.spritecollide(self.player, self.teleports, False)
-        # if tel_block_hit:
-        #     #   Find the other teleport block
-        #     destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
+        #   teleportation
+        tel_block_hit = pg.sprite.spritecollide(self.player, self.teleports, False)
+        if tel_block_hit:
+            #   Find the other teleport block
+            destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
             
-        #     destination_x+=0.5 #telelport goes by top left and the player is tracked by its center
-        #     destination_y+=0.5
+            destination_x+=0.5 #telelport goes by top left and the player is tracked by its center
+            destination_y+=0.5
             
-        #     #   Adjust the destination by considering player's movement
-        #     x_modifier = 0
-        #     if self.player.vel.x > 0:
-        #         x_modifier = 1
-        #     elif self.player.vel.x < 0:
-        #         x_modifier = -1
-        #     y_modifier = 0
-        #     if self.player.vel.y > 0:
-        #         y_modifier = 1
-        #     elif self.player.vel.y < 0:
-        #         y_modifier = -1
-        #     self.player.pos.x = (destination_x + x_modifier) * TILESIZE
-        #     self.player.pos.y = (destination_y + y_modifier) * TILESIZE
+            # #   Adjust the destination by considering player's movement
+            # x_modifier = 0
+            # if self.player.vel.x > 0:
+            #     x_modifier = 1
+            # elif self.player.vel.x < 0:
+            #     x_modifier = -1
+            # y_modifier = 0
+            # if self.player.vel.y > 0:
+            #     y_modifier = 1
+            # elif self.player.vel.y < 0:
+            #     y_modifier = -1
+            self.player.pos.x = (destination_x) * TILESIZE
+            self.player.pos.y = (destination_y) * TILESIZE
 
-        #     #BUGFIX
-        #     self.player.rect.centerx= int(self.player.pos.x)
-        #     self.player.rect.centery= int(self.player.pos.y)
+            #BUGFIX
+            self.player.rect.centerx= int(self.player.pos.x)
+            self.player.rect.centery= int(self.player.pos.y)
 
                 
     def update(self):
@@ -211,6 +211,10 @@ class Game:
         if self.draw_debug:
             for wall in self.walls:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(wall.rect), 1)
+            for mirror in self.teleports:
+                pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(mirror.rect), 1)
+            for goal in self.win:
+                pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(goal.rect), 1)
                     
         #   Reduce vision of the map
         for r in range(VISION_RADIUS, 600):
