@@ -89,7 +89,6 @@ class Game:
         
         
         for tile_object in self.map.tmxdata.objects:
-            print(tile_object.name)
             if tile_object.name == "player":
                 self.player = Player(self, tile_object.x, tile_object.y)
             if tile_object.name == "wall":
@@ -214,8 +213,8 @@ class Game:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(wall.rect), 1)
                     
         #   Reduce vision of the map
-        # for r in range(VISION_RADIUS, 600):
-        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        for r in range(VISION_RADIUS, 600):
+            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         
         #   Layer on the minimap if in mode 1
         if self.mode == '1':

@@ -1,3 +1,4 @@
+import pygame as pg
 '''Settings'''
 
 #colors
@@ -30,7 +31,8 @@ GRIDWIDTH = WIDTH / TILESIZE
 GRIDHEIGHT = HEIGHT / TILESIZE
 
 #player settings
-PLAYERSPEED = 300
+PLAYERSPEED = 200
+PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
 PLAYER_IMG_FRONT_STILL = "p1_still.png"
 PLAYER_IMG_FRONT_WALK1 = "p1_walk1.png"
 PLAYER_IMG_FRONT_WALK2 = "p1_walk2.png"

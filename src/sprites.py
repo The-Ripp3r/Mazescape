@@ -2,6 +2,7 @@
 import pygame as pg
 from settings import *
 from os import path
+from tilemap import collide_hit_rect
 vec = pg.math.Vector2
 
 
@@ -53,6 +54,8 @@ class Player(pg.sprite.Sprite):
 
         self.image = down_still
         self.rect = self.image.get_rect()
+        self.hit_rect=PLAYER_HIT_RECT
+        self.hit_rect.center = self.rect.center
 
 
     def get_keys(self):
@@ -88,26 +91,26 @@ class Player(pg.sprite.Sprite):
             dir (str): direction of the sprite collisions, either "x" or "y"
         """
         if dir == "x":
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.walls, False, collide_hit_rect)
             if hits:
                 if self.vel.x > 0: #if moving to the right during collision
-                    self.pos.x = hits[0].rect.left - self.rect.width/2 #put our left hand corner to the left hand corner of the object we hit and shift ourselves outside of tht object
+                    self.pos.x = hits[0].rect.left - self.hit_rect.width/2 #put our left hand corner to the left hand corner of the object we hit and shift ourselves outside of tht object
                 if self.vel.x < 0: #if moving to the left during collision
-                    self.pos.x = hits[0].rect.right + self.rect.width/2 # put our left hand corner to the right hand corner
+                    self.pos.x = hits[0].rect.right + self.hit_rect.width/2 # put our left hand corner to the right hand corner
                 self.vel.x = 0 #redundant
                 # print("hyuck")
-                self.rect.centerx = self.pos.x
+                self.hit_rect.centerx = self.pos.x
 
         if dir == "y": #analgous to x case
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.walls, False, collide_hit_rect)
             if hits:
                 if self.vel.y > 0: #if moving down during collision
-                    self.pos.y = hits[0].rect.top - self.rect.height/2 
+                    self.pos.y = hits[0].rect.top - self.hit_rect.height/2 
                 if self.vel.y < 0: #if moving up during collision
-                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
+                    self.pos.y = hits[0].rect.bottom + self.hit_rect.height/2
                 self.vel.y = 0 #redundant
                 # print("hyuck")
-                self.rect.centery = self.pos.y
+                self.hit_rect.centery = self.pos.y
 
     def update(self):
         """
@@ -116,10 +119,13 @@ class Player(pg.sprite.Sprite):
         """
         self.get_keys()
         self.pos += self.vel * self.game.dt
-        self.rect.centerx = self.pos.x
+        self.rect=self.image.get_rect()
+        self.rect.center = self.pos
+        self.hit_rect.centerx = self.pos.x
         self.collide_wall('x')
-        self.rect.centery = self.pos.y
+        self.hit_rect.centery = self.pos.y
         self.collide_wall('y') 
+        self.rect.center = self.hit_rect.center
 
 
 class Obstacle(pg.sprite.Sprite):
@@ -147,7 +153,6 @@ class Mirror(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(x, y, w, h)
-        print(x, y)
         self.rect.x = x 
         self.rect.y = y 
         #self.tp_x, self.tp_y = destinations[(self.rect.x/TILESIZE, self.rect.y/TILESIZE)] #destination pt

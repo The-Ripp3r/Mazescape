@@ -3,6 +3,10 @@ import pygame as pg
 import pytmx
 from settings import *
 
+
+def collide_hit_rect(one, two):
+    return one.hit_rect.colliderect(two.rect)
+
 class Map:
     """
     Represents a map of the maze in Mazescape.
@@ -109,6 +113,6 @@ class Camera:
         """
         return entity.rect.move(self.camera.topleft)
 
-    def apply_rect(self, rect):
+    def apply_rect(self, rect): #made for map bc it is not a sprite
         return rect.move(self.camera.topleft)
    
