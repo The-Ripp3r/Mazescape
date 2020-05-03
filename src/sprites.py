@@ -1,6 +1,7 @@
 '''Sprites'''
 import pygame as pg
 from settings import *
+from os import path
 vec = pg.math.Vector2
 
 
@@ -20,29 +21,61 @@ class Player(pg.sprite.Sprite):
         x (float): the x pixel location of the player sprite
         y (float): the y pixel locaiton of the player sprite
     """
+    
+
+
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.player_img
-        # self.image = pg.Surface((TILESIZE, TILESIZE))
-        # self.image.fill(YELLOW)
-        self.rect = self.image.get_rect()
         self.vel = vec(0, 0)
-        self.pos = vec(x, y) * TILESIZE
-    
+        self.pos = vec(x, y) #* TILESIZE
+        self.counter=0
+        self.step=1
+
+        #images
+        left_w1=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_LEFT_WALK1)).convert_alpha()
+        left_still=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_LEFT_STILL)).convert_alpha()
+        left_w2=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_LEFT_WALK2)).convert_alpha()
+        right_w1=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_RIGHT_WALK1)).convert_alpha()
+        right_still=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_RIGHT_STILL)).convert_alpha()
+        right_w2=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_RIGHT_WALK2)).convert_alpha()
+        up_w1=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_BACK_WALK1)).convert_alpha()
+        up_still=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_BACK_STILL)).convert_alpha()
+        up_w2=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_BACK_WALK2)).convert_alpha()
+        down_w1=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_FRONT_WALK1)).convert_alpha()
+        down_still=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_FRONT_STILL)).convert_alpha()
+        down_w2=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_FRONT_WALK2)).convert_alpha()
+        self.img_map={'left':{0:left_w1, 1:left_still, 2:left_w2},
+                    'right':{0:right_w1, 1:right_still, 2:right_w2},
+                    'up':{0:up_w1, 1:up_still, 2:up_w2},
+                    'down':{0:down_w1, 1:down_still, 2:down_w2}}
+
+        self.image = down_still
+        self.rect = self.image.get_rect()
+
 
     def get_keys(self):
         self.vel = vec(0, 0)
         keys=pg.key.get_pressed()
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.vel.x = -PLAYERSPEED
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vel.x = PLAYERSPEED
+        self.counter+=1
+        if self.counter%10==0:
+            self.step+=1
+        if self.step==3:
+            self.step=0
         if keys[pg.K_DOWN] or keys[pg.K_s]:
+            self.image = self.img_map['down'][self.step]
             self.vel.y = PLAYERSPEED
         if keys[pg.K_UP] or keys[pg.K_w]:
+            self.image = self.img_map['up'][self.step]
             self.vel.y = -PLAYERSPEED
+        if keys[pg.K_LEFT] or keys[pg.K_a]:
+            self.image = self.img_map['left'][self.step]
+            self.vel.x = -PLAYERSPEED
+        if keys[pg.K_RIGHT] or keys[pg.K_d]:
+            self.image = self.img_map['right'][self.step]
+            self.vel.x = PLAYERSPEED
+        
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071 #pythagorean theorem if it was v speed in one direction and you want to break it up into x and y; ensures diagonal speed isnt too fast
 
@@ -87,6 +120,37 @@ class Player(pg.sprite.Sprite):
         self.collide_wall('x')
         self.rect.centery = self.pos.y
         self.collide_wall('y') 
+
+
+class Obstacle(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h):
+        self.groups= game.walls
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        self.rect.x = x 
+        self.rect.y = y 
+
+class Pentagram(pg.sprite.Sprite):
+ 
+    def __init__(self, game, x, y, w, h):
+        self.groups= game.win
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        self.rect.x = x 
+        self.rect.y = y 
+
+class Mirror(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h, destinations):
+        self.groups = game.teleports
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        print(x, y)
+        self.rect.x = x 
+        self.rect.y = y 
+        #self.tp_x, self.tp_y = destinations[(self.rect.x/TILESIZE, self.rect.y/TILESIZE)] #destination pt
 
 class Wall(pg.sprite.Sprite):
     """
@@ -159,3 +223,4 @@ class Goal(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+

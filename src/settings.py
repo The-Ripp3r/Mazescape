@@ -31,4 +31,18 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 
 #player settings
 PLAYERSPEED = 300
-PLAYER_IMG = "player_walk1.png"
+PLAYER_IMG_FRONT_STILL = "p1_still.png"
+PLAYER_IMG_FRONT_WALK1 = "p1_walk1.png"
+PLAYER_IMG_FRONT_WALK2 = "p1_walk2.png"
+PLAYER_IMG_BACK_STILL = "p1_still_up.png"
+PLAYER_IMG_BACK_WALK1 = "p1_walk1_up.png"
+PLAYER_IMG_BACK_WALK2 = "p1_walk2_up.png"
+PLAYER_IMG_LEFT_STILL = "p1_still_left.png"
+PLAYER_IMG_LEFT_WALK1 = "p1_walk1_left.png"
+PLAYER_IMG_LEFT_WALK2 = "p1_walk2_left.png"
+PLAYER_IMG_RIGHT_STILL = "p1_still_right.png"
+PLAYER_IMG_RIGHT_WALK1 = "p1_walk1_right.png"
+PLAYER_IMG_RIGHT_WALK2 = "p1_walk2_right.png"
+
+
+

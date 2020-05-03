@@ -1,5 +1,6 @@
 ''''''
 import pygame as pg
+import pytmx
 from settings import *
 
 class Map:
@@ -16,6 +17,7 @@ class Map:
         height (int): the pixel height of the map
     """
     def __init__(self, filename):
+        self.floor_locs = {}
         self.wall_locs = {}
         self.teleport_locs = {}
         self.player_loc = (SPAWN_X, SPAWN_Y)
@@ -27,6 +29,8 @@ class Map:
                 for tile in line:
                     if tile == "1":
                         self.wall_locs[col, row] = True
+                    if tile == ".":
+                        self.floor_locs[col, row] = True
                     if tile == "P":
                         self.player_loc = (col, row)   
                     if tile == "G":
@@ -40,6 +44,28 @@ class Map:
         self.tile_height = row
         self.width = self.tile_width * TILESIZE
         self.height = self.tile_height * TILESIZE
+
+
+class TiledMap:
+    def __init__(self, filename):
+        tm = pytmx.load_pygame(filename, pixelalpha=True)
+        self.width = tm.width * tm.tilewidth
+        self.height = tm.height * tm.tileheight
+        self.tmxdata = tm
+
+    def render(self, surface):
+        ti = self.tmxdata.get_tile_image_by_gid
+        for layer in self.tmxdata.visible_layers:
+            if isinstance(layer, pytmx.TiledTileLayer):
+                for x, y, gid, in layer:
+                    tile = ti(gid)
+                    if tile:
+                        surface.blit(tile, (x * self.tmxdata.tilewidth, y * self.tmxdata.tileheight))
+
+    def make_map(self):
+        tmp_surface=pg.Surface((self.width, self.height))
+        self.render(tmp_surface)
+        return tmp_surface
 
 class Camera:
     """
@@ -83,4 +109,6 @@ class Camera:
         """
         return entity.rect.move(self.camera.topleft)
 
+    def apply_rect(self, rect):
+        return rect.move(self.camera.topleft)
    

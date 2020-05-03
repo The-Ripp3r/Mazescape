@@ -38,12 +38,14 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        # pg.key.set_repeat(250, 100)
+        #folder names
         self.game_folder = path.dirname(__file__)
         self.sprite_folder = path.join(self.game_folder, 'sprites')
+        self.map_folder = path.join(self.game_folder, 'maps')
+        #set mode
         self.mode = mode
-        minimap = 'out' if mode == '1' else None
-        self.load_data('research_map', 'research_map_tp', minimap_name=minimap)
+        minimap = 'out.png' if mode == '1' else None
+        self.load_data('mvp_map.tmx', 'research_map_tp.txt', minimap_name=minimap)
 
     def load_data(self, map_name, tp_name, minimap_name=None):
         """
@@ -58,19 +60,23 @@ class Game:
                 maps coordinates of teleport tiles to each other in pairs.
                 tp_name is a .txt located in map subfolder of self.folder.
         """
-        map_loc = 'maps/' + map_name + '.txt'
-        self.map = Map(path.join(self.game_folder, map_loc))
+        # map_loc = 'maps/' + map_name + '.txt'
+        # self.map = Map(path.join(self.game_folder, map_loc))
+        
+        self.map= TiledMap(path.join(self.map_folder, map_name))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
+        
         if minimap_name != None:
-            minimap_loc = 'maps/' + minimap_name + '.png'
-            self.minimap = pg.image.load(path.join(self.game_folder, minimap_loc)).convert_alpha()
+            self.minimap = pg.image.load(path.join(self.map_folder, minimap_name)).convert_alpha()
             self.minimap = pg.transform.scale(self.minimap, (WIDTH//3, HEIGHT//3))
-        self.teleport_map = 'maps/' + tp_name + '.txt'
-        #images
-        self.player_img = pg.image.load(path.join(self.sprite_folder, PLAYER_IMG)).convert_alpha()
-        # x = self.player_img.get_width()
-        # y = self.player_img.get_height()
-        # self.player_img = pg.transform.scale(self.player_img, (2*x, 2*y))
-
+        
+        with open(path.join(self.map_folder, tp_name), 'rt') as f:
+            #   destinations is a dict mapping each tilemap teleport coordinate to
+            #   the destination tilemap coordinate
+            self.destinations = eval(f.read())
+       
+        
     def new(self):
         """
         Initialize and setup a new maze level.
@@ -79,16 +85,32 @@ class Game:
         self.walls = pg.sprite.Group()
         self.teleports = pg.sprite.Group() 
         self.win = pg.sprite.Group() 
-        self.player = Player(self, self.map.player_loc[0], self.map.player_loc[1])
-        self.goal = Goal(self, self.map.goal[0], self.map.goal[1])
-        for loc in self.map.wall_locs:
-            Wall(self, loc[0], loc[1])
-        for loc in self.map.teleport_locs:
-            Teleport(self, loc[0], loc[1], self.teleport_map)
+        #self.player = Player(self, 10, 10)
         
+        
+        for tile_object in self.map.tmxdata.objects:
+            print(tile_object.name)
+            if tile_object.name == "player":
+                self.player = Player(self, tile_object.x, tile_object.y)
+            if tile_object.name == "wall":
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            if tile_object.name == "mirror":
+                Mirror(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, self.destinations)
+            if tile_object.name == "pentagram":
+                Pentagram(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+
         self.camera = Camera(self.map.width, self.map.height)
+        self.draw_debug = False
 
-
+        #map.txt ONLY
+        # self.goal = Goal(self, self.map.goal[0], self.map.goal[1])
+        # for loc in self.map.floor_locs:
+        #     Floor(self, loc[0], loc[1])
+        # for loc in self.map.wall_locs:
+        #     Wall(self, loc[0], loc[1])
+        # for loc in self.map.teleport_locs:
+        #     Teleport(self, loc[0], loc[1], self.teleport_map)
+        
     def run(self):
         """
         Runs the Mazescape game.
@@ -119,39 +141,40 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit_game()
+                if event.key == pg.K_h:
+                    self.draw_debug = not self.draw_debug
 
         #   win condition
         if pg.sprite.spritecollide(self.player, self.win, False):
             self.quit_game()
 
         
-        #   teleportation
-        tel_block_hit = pg.sprite.spritecollide(self.player, self.teleports, False)
-        if tel_block_hit:
-            #   Find the other teleport block
-            destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
+        # #   teleportation
+        # tel_block_hit = pg.sprite.spritecollide(self.player, self.teleports, False)
+        # if tel_block_hit:
+        #     #   Find the other teleport block
+        #     destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
             
-            destination_x+=0.5 #telelport goes by top left and the player is tracked by its center
-            destination_y+=0.5
+        #     destination_x+=0.5 #telelport goes by top left and the player is tracked by its center
+        #     destination_y+=0.5
             
-            #   Adjust the destination by considering player's movement
-            x_modifier = 0
-            if self.player.vel.x > 0:
-                print("JACK")
-                x_modifier = 1
-            elif self.player.vel.x < 0:
-                x_modifier = -1
-            y_modifier = 0
-            if self.player.vel.y > 0:
-                y_modifier = 1
-            elif self.player.vel.y < 0:
-                y_modifier = -1
-            self.player.pos.x = (destination_x + x_modifier) * TILESIZE
-            self.player.pos.y = (destination_y + y_modifier) * TILESIZE
+        #     #   Adjust the destination by considering player's movement
+        #     x_modifier = 0
+        #     if self.player.vel.x > 0:
+        #         x_modifier = 1
+        #     elif self.player.vel.x < 0:
+        #         x_modifier = -1
+        #     y_modifier = 0
+        #     if self.player.vel.y > 0:
+        #         y_modifier = 1
+        #     elif self.player.vel.y < 0:
+        #         y_modifier = -1
+        #     self.player.pos.x = (destination_x + x_modifier) * TILESIZE
+        #     self.player.pos.y = (destination_y + y_modifier) * TILESIZE
 
-            #BUGFIX
-            self.player.rect.centerx= int(self.player.pos.x)
-            self.player.rect.centery= int(self.player.pos.y)
+        #     #BUGFIX
+        #     self.player.rect.centerx= int(self.player.pos.x)
+        #     self.player.rect.centery= int(self.player.pos.y)
 
                 
     def update(self):
@@ -176,20 +199,31 @@ class Game:
         """
         Draws the given map level by layering all the sprites.
         """
-        self.screen.fill(BGCOLOR)
-        self.draw_grid()
-        #   Layer all sprites
+        pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
+        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+        #self.screen.fill(BGCOLOR)
+        #self.draw_grid()
+
+        #   Layer player and monsters on map
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
+            if self.draw_debug:
+                pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(sprite.hit_rect), 1)
+        if self.draw_debug:
+            for wall in self.walls:
+                pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(wall.rect), 1)
+                    
         #   Reduce vision of the map
-        for r in range(VISION_RADIUS, 600):
-            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        # for r in range(VISION_RADIUS, 600):
+        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        
         #   Layer on the minimap if in mode 1
         if self.mode == '1':
             self.screen.blit(self.minimap, [10, 10])
+        
         pg.display.flip() #update the full display surface to the screen
 
-    def draw_text(self, text, font, color, surface, x, y):
+    def draw_text(self, text, font, color, surface, x, y): #use for narrative in end sequence
         """
         Draws text onto a given surface.
 
