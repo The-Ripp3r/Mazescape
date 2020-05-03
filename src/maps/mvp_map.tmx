@@ -332,9 +332,9 @@
  </layer>
  <objectgroup id="7" name="objects">
   <object id="1" name="player" x="398.667" y="206.667"/>
-  <object id="34" name="pentagram" x="665.333" y="672" width="46.6667" height="34.6667"/>
-  <object id="36" name="mirror" x="670.667" y="508" width="68" height="76"/>
-  <object id="38" name="mirror" x="671.333" y="926" width="68" height="76"/>
+  <object id="34" name="pentagram" x="685.833" y="685.5" width="5.1667" height="4.1667"/>
+  <object id="36" name="mirror" x="687.667" y="520" width="32" height="45.5"/>
+  <object id="38" name="mirror" x="687.333" y="936.5" width="32.5" height="45"/>
   <object id="39" name="wall" x="5.33333" y="-124" width="1492" height="293.333"/>
   <object id="40" name="wall" x="1088" y="4" width="446.667" height="1401.33"/>
   <object id="41" name="wall" x="2.66667" y="1085.33" width="1522.67" height="324"/>
