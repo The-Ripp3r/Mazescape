@@ -14,5 +14,6 @@ Libraries used: pygame, os, sys
 1) Install python3
 2) Install [pygame](https://www.pygame.org/wiki/GettingStarted#Pygame%20Installation)
 3) Install [pygame-menu](https://github.com/ppizarror/pygame-menu)
+4) Install pytmx (pip install)
 3) Clone the repo
 4) `python3 main.py`
