@@ -28,6 +28,8 @@ main_menu = None  # type: pygameMenu.Menu
 # noinspection PyTypeChecker
 surface = None  # type: pygame.SurfaceType
 
+paused = False
+
 
 # -----------------------------------------------------------------------------
 # Methods
@@ -71,6 +73,51 @@ def main_background():
     global surface
     surface.fill(COLOR_BACKGROUND)
 
+
+def no():
+    pass
+
+
+def unpause(pause_menu):
+    global paused
+    paused = not paused
+    pause_menu.disable();
+
+
+def pause_menu():
+    pause_menu = pygameMenu.Menu(surface,
+                                bgfun=no,
+                                back_box=False,
+                                color_selected=DARKRED,
+                                font=pygameMenu.font.FONT_BEBAS,
+                                font_color=COLOR_BLACK,
+                                font_size=30,
+                                menu_alpha=100,
+                                menu_color_title=MENU_BACKGROUND_COLOR,
+                                menu_color = COLOR_WHITE,
+                                menu_height=int(WINDOW_SIZE[1] * 0.5),
+                                menu_width=int(WINDOW_SIZE[0] * 0.5),
+                                onclose=pygameMenu.events.DISABLE_CLOSE,
+                                option_shadow=False,
+                                title='Paused',
+                                window_height=WINDOW_SIZE[1],
+                                window_width=WINDOW_SIZE[0]
+                                )
+    pause_menu.add_button('Resume',  # When pressing return -> play(mode[0], font)
+                         unpause,
+                         pause_menu)
+    pause_menu.add_button('Quit', pygameMenu.events.EXIT)
+
+    global paused
+    while paused:
+        # Tick
+        clock.tick(FPS)
+
+        # Main menu
+        pause_menu.mainloop()
+
+        # Flip surface
+        pygame.display.flip()
 
 def run_menu(game_function):
     """

@@ -2,7 +2,7 @@
 import sys
 from os import path
 import pygame as pg
-from menu import *
+import menu
 from settings import *
 from sprites import *
 from tilemap import *
@@ -143,7 +143,8 @@ class Game:
                 self.quit_game()
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
-                    self.quit_game()
+                    menu.paused = True
+                    menu.pause_menu()
                 if event.key == pg.K_h:
                     self.draw_debug = not self.draw_debug
 
@@ -257,4 +258,4 @@ def run_game(mode):
         g.run()
         g.show_go_screen()
 
-run_menu(run_game)
+menu.run_menu(run_game)
