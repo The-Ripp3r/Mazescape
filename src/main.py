@@ -1,5 +1,6 @@
 '''Tilemap game'''
 import sys
+import wave
 from os import path
 import pygame as pg
 import menu
@@ -258,5 +259,11 @@ def run_game(mode):
         g.run()
         g.show_go_screen()
 
+#   Music
+pg.init()
+file_path = 'sounds/background_deltarune.wav'
+pg.mixer.music.load(file_path)
+pg.mixer.music.play(-1)
+#   Run Game
 menu.game_function = run_game
 menu.run_menu()
