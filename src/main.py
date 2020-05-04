@@ -1,8 +1,9 @@
 '''Tilemap game'''
 import sys
+import wave
 from os import path
 import pygame as pg
-from menu import *
+import menu
 from settings import *
 from sprites import *
 from tilemap import *
@@ -147,13 +148,14 @@ class Game:
                 self.quit_game()
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
-                    self.quit_game()
+                    menu.paused = True
+                    menu.pause_menu()
                 if event.key == pg.K_h:
                     self.draw_debug = not self.draw_debug
 
         #   win condition
         if pg.sprite.spritecollide(self.player, self.win, False):
-            self.quit_game()
+            menu.win_menu()
 
         self.portal(self.player)
         #self.portal(self.monster)
@@ -229,7 +231,7 @@ class Game:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(goal.rect), 1)
                     
         #   Reduce vision of the map
-        for r in range(VISION_RADIUS, 600):
+        for r in range(VISION_RADIUS, 475):
             pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         
         #   Layer on the minimap if in mode 1
@@ -265,4 +267,11 @@ def run_game(mode):
         g.run()
         g.show_go_screen()
 
-run_menu(run_game)
+#   Music
+pg.init()
+file_path = 'sounds/background_deltarune.mp3'
+pg.mixer.music.load(file_path)
+pg.mixer.music.play(-1)
+#   Run Game
+menu.game_function = run_game
+menu.run_menu()
