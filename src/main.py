@@ -261,7 +261,7 @@ def run_game(mode):
 
 #   Music
 pg.init()
-file_path = 'sounds/background_deltarune.wav'
+file_path = 'sounds/background_deltarune.mp3'
 pg.mixer.music.load(file_path)
 pg.mixer.music.play(-1)
 #   Run Game
