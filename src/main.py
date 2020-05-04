@@ -150,7 +150,7 @@ class Game:
 
         #   win condition
         if pg.sprite.spritecollide(self.player, self.win, False):
-            self.quit_game()
+            menu.win_menu()
 
         
         #   teleportation
@@ -222,7 +222,7 @@ class Game:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(goal.rect), 1)
                     
         #   Reduce vision of the map
-        for r in range(VISION_RADIUS, 600):
+        for r in range(VISION_RADIUS, 475):
             pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         
         #   Layer on the minimap if in mode 1
@@ -258,4 +258,5 @@ def run_game(mode):
         g.run()
         g.show_go_screen()
 
-menu.run_menu(run_game)
+menu.game_function = run_game
+menu.run_menu()

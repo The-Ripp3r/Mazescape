@@ -17,7 +17,7 @@ COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (255, 255, 255)
 FPS = 60.0
 MODE = ['1']
-MENU_BACKGROUND_COLOR = DARKRED
+MENU_BACKGROUND_COLOR = LIGHTGREY
 WINDOW_SIZE = (WIDTH, HEIGHT)
 
 clock = None
@@ -29,6 +29,7 @@ main_menu = None  # type: pygameMenu.Menu
 surface = None  # type: pygame.SurfaceType
 
 paused = False
+game_function = None
 
 
 # -----------------------------------------------------------------------------
@@ -81,7 +82,7 @@ def no():
 def unpause(pause_menu):
     global paused
     paused = not paused
-    pause_menu.disable();
+    pause_menu.disable()
 
 
 def pause_menu():
@@ -106,7 +107,7 @@ def pause_menu():
     pause_menu.add_button('Resume',  # When pressing return -> play(mode[0], font)
                          unpause,
                          pause_menu)
-    pause_menu.add_button('Quit', pygameMenu.events.EXIT)
+    pause_menu.add_button('Quit', run_menu)
 
     global paused
     while paused:
@@ -119,7 +120,48 @@ def pause_menu():
         # Flip surface
         pygame.display.flip()
 
-def run_menu(game_function):
+
+def win_menu():
+    win_menu = pygameMenu.TextMenu(surface,
+                                bgfun=no,
+                                back_box=False,
+                                color_selected=DARKRED,
+                                font=pygameMenu.font.FONT_BEBAS,
+                                font_color=COLOR_BLACK,
+                                font_size=24,
+                                menu_alpha=100,
+                                font_size_title=30,
+                                font_title=pygameMenu.font.FONT_BEBAS,
+                                menu_color_title=MENU_BACKGROUND_COLOR,
+                                menu_color=COLOR_WHITE,
+                                menu_height=int(WINDOW_SIZE[1] * 0.5),
+                                menu_width=int(WINDOW_SIZE[0] * 0.5),
+                                onclose=pygameMenu.events.DISABLE_CLOSE,
+                                option_shadow=False,
+                                text_color=COLOR_BLACK,
+                                text_fontsize=20,
+                                text_align=pygameMenu.locals.ALIGN_CENTER,
+                                title='You Won!',
+                                window_height=WINDOW_SIZE[1],
+                                window_width=WINDOW_SIZE[0]
+                                )
+                                
+    win_menu.add_line("Congratulations!")
+    win_menu.add_line("You beat the game :)")
+    win_menu.add_button('Quit', run_menu)
+
+    while True:
+        # Tick
+        clock.tick(FPS)
+
+        # Main menu
+        win_menu.mainloop()
+
+        # Flip surface
+        pygame.display.flip()
+
+
+def run_menu():
     """
     Main program.
     :param test: Indicate function is being tested
@@ -150,6 +192,7 @@ def run_menu(game_function):
     # -------------------------------------------------------------------------
 
     # Play menu
+    global game_function
     play_menu = pygameMenu.Menu(surface,
                                 bgfun=main_background,
                                 back_box=False,
