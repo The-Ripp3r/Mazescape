@@ -45,13 +45,13 @@ class Game:
         #set mode
         self.mode = mode
         minimap = 'out.png' if mode == '1' else None
-        self.load_data('mvp_map.tmx', 'mvp_map_tp.txt', minimap_name=minimap)
+        self.load_data('mvp_map.tmx', 'grid.txt', 'mvp_map_tp.txt', minimap_name=minimap)
 
         #tuning
         self.offset_x=1
         self.offset_y=2.5
 
-    def load_data(self, map_name, tp_name, minimap_name=None):
+    def load_data(self, map_name, grid_name, tp_name, minimap_name=None):
         """
         Loads data for a specific game map level.
 
@@ -68,6 +68,7 @@ class Game:
         # self.map = Map(path.join(self.game_folder, map_loc))
         
         self.map= TiledMap(path.join(self.map_folder, map_name))
+        self.graph= OccupancyGrid(path.join(self.map_folder, grid_name)).make_graph()
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         
@@ -89,12 +90,15 @@ class Game:
         self.walls = pg.sprite.Group()
         self.teleports = pg.sprite.Group() 
         self.win = pg.sprite.Group() 
+        self.threat = pg.sprite.Group()
         #self.player = Player(self, 10, 10)
         
         
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == "player":
                 self.player = Player(self, tile_object.x, tile_object.y)
+            if tile_object.name == "monster":
+                self.monster = Monster(self, tile_object.x, tile_object.y)
             if tile_object.name == "wall":
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == "mirror":
@@ -151,9 +155,13 @@ class Game:
         if pg.sprite.spritecollide(self.player, self.win, False):
             self.quit_game()
 
+        self.portal(self.player)
+        #self.portal(self.monster)
         
+
+    def portal(self, sprite):
         #   teleportation
-        tel_block_hit = pg.sprite.spritecollide(self.player, self.teleports, False)
+        tel_block_hit = pg.sprite.spritecollide(sprite, self.teleports, False)
         if tel_block_hit:
             #   Find the other teleport block
             destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
@@ -172,14 +180,14 @@ class Game:
             #     y_modifier = 1
             # elif self.player.vel.y < 0:
             #     y_modifier = -1
-            self.player.pos.x = (destination_x+self.offset_x) * TILESIZE
-            self.player.pos.y = (destination_y+self.offset_y) * TILESIZE
+            sprite.pos.x = (destination_x+self.offset_x) * TILESIZE
+            sprite.pos.y = (destination_y+self.offset_y) * TILESIZE
 
-            #BUGFIX
-            self.player.rect.centerx= int(self.player.pos.x)
-            self.player.rect.centery= int(self.player.pos.y)
+            sprite.rect.centerx= int(sprite.pos.x)
+            sprite.rect.centery= int(sprite.pos.y)
 
-                
+
+
     def update(self):
         """
         Updates the frame of the game

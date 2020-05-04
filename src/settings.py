@@ -46,5 +46,20 @@ PLAYER_IMG_RIGHT_STILL = "p1_still_right.png"
 PLAYER_IMG_RIGHT_WALK1 = "p1_walk1_right.png"
 PLAYER_IMG_RIGHT_WALK2 = "p1_walk2_right.png"
 
+#monster settings
+MONSTERSPEED = 75
+MONSTER_HIT_RECT = pg.Rect(0, 0, 30, 30)
+MONSTER_IMG_FRONT_STILL = "p1_still.png"
+MONSTER_IMG_FRONT_WALK1 = "p1_walk1.png"
+MONSTER_IMG_FRONT_WALK2 = "p1_walk2.png"
+MONSTER_IMG_BACK_STILL = "p1_still_up.png"
+MONSTER_IMG_BACK_WALK1 = "p1_walk1_up.png"
+MONSTER_IMG_BACK_WALK2 = "p1_walk2_up.png"
+MONSTER_IMG_LEFT_STILL = "p1_still_left.png"
+MONSTER_IMG_LEFT_WALK1 = "p1_walk1_left.png"
+MONSTER_IMG_LEFT_WALK2 = "p1_walk2_left.png"
+MONSTER_IMG_RIGHT_STILL = "p1_still_right.png"
+MONSTER_IMG_RIGHT_WALK1 = "p1_walk1_right.png"
+MONSTER_IMG_RIGHT_WALK2 = "p1_walk2_right.png"
 
 

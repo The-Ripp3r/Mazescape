@@ -115,4 +115,38 @@ class Camera:
 
     def apply_rect(self, rect): #made for map bc it is not a sprite
         return rect.move(self.camera.topleft)
-   
+
+
+class OccupancyGrid:
+    def __init__(self, filename):
+        self.grid=[]
+        #make python occupancy grid
+        with open(filename, 'rt') as f:
+                #loads map file and stores wall locations and player location
+            for line in f:
+                row=[]
+                for tile in line:
+                    row.append(tile)
+                self.grid.append(row)
+        
+        self.width = self.tile_width * TILESIZE
+        self.height = self.tile_height * TILESIZE
+
+    
+    def make_graph(self):
+        graph={}
+        for r in self.grid:
+            for c in r:
+                if self.grid[r][c]==0:
+                    #init
+                    if (r,c) not in graph:
+                        graph[(r,c)]=set()
+                    #look at neighbors
+                    for r_prime in range(r-1, r+2): #possible remove diagonals
+                        for c_prime in range(c-1, c+2):
+                            if r_prime<0 or c_prime<0 or r_prime>len(self.grid) or c_prime>len(self.grid[0]):
+                                continue
+                            if self.grid[r_prime][c_prime]==0:
+                                graph[(r,c)].add((r_prime, c_prime))
+
+        return graph
