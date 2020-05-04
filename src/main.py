@@ -47,6 +47,10 @@ class Game:
         minimap = 'out.png' if mode == '1' else None
         self.load_data('mvp_map.tmx', 'mvp_map_tp.txt', minimap_name=minimap)
 
+        #tuning
+        self.offset_x=1
+        self.offset_y=2.5
+
     def load_data(self, map_name, tp_name, minimap_name=None):
         """
         Loads data for a specific game map level.
@@ -154,8 +158,8 @@ class Game:
             #   Find the other teleport block
             destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
             
-            destination_x+=0.5 #telelport goes by top left and the player is tracked by its center
-            destination_y+=0.5
+            #destination_x+=1 #telelport goes by top left and the player is tracked by its center
+            # destination_y+=2
             
             # #   Adjust the destination by considering player's movement
             # x_modifier = 0
@@ -168,8 +172,8 @@ class Game:
             #     y_modifier = 1
             # elif self.player.vel.y < 0:
             #     y_modifier = -1
-            self.player.pos.x = (destination_x) * TILESIZE
-            self.player.pos.y = (destination_y) * TILESIZE
+            self.player.pos.x = (destination_x+self.offset_x) * TILESIZE
+            self.player.pos.y = (destination_y+self.offset_y) * TILESIZE
 
             #BUGFIX
             self.player.rect.centerx= int(self.player.pos.x)
