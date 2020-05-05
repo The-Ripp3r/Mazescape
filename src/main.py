@@ -96,7 +96,6 @@ class Game:
         self.teleports = pg.sprite.Group() 
         self.win = pg.sprite.Group() 
         self.threat = pg.sprite.Group()
-        #self.player = Player(self, 10, 10)
         
         
         for tile_object in self.map.tmxdata.objects:
@@ -111,8 +110,8 @@ class Game:
             if tile_object.name == "pentagram":
                 Pentagram(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 
-        #monster for testing
-        self.monster=Monster(self, self.player.pos.x+100, self.player.pos.y+32)
+        # #monster for testing
+        # self.monster=Monster(self, self.player.pos.x+100, self.player.pos.y+32)
 
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
@@ -165,7 +164,7 @@ class Game:
             menu.win_menu()
 
         self.portal(self.player)
-        self.portal(self.monster)
+        # self.portal(self.monster)
         
 
     def portal(self, sprite):

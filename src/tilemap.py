@@ -200,5 +200,5 @@ class OccupancyGrid:
             s=(teleport[0]+self.game.offset_x, int(teleport[1]+self.game.offset_y-1))
             e=(self.game.destinations[teleport][0]+self.game.offset_x, int(self.game.destinations[teleport][1]+self.game.offset_y-1))
             graph[s].add(e)
-        
+            
         return graph
