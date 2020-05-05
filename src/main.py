@@ -45,12 +45,14 @@ class Game:
         self.map_folder = path.join(self.game_folder, 'maps')
         #set mode
         self.mode = mode
-        minimap = 'out.png' if mode == '1' else None
+        minimap = 'extended_map.png' if mode == '1' else None
+     
+
         #tuning
         self.offset_x=1
         self.offset_y=2.5
         
-        self.load_data('mvp_map.tmx', 'mvp_map.txt', 'mvp_map_tp.txt', minimap_name=minimap)
+        self.load_data('extended_map.tmx', 'extended_map.txt', 'extended_map_tp.txt', minimap_name=minimap)
 
        
 
