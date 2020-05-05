@@ -137,37 +137,6 @@ class OccupancyGrid:
 
     
     def make_graph(self):
-        # graph={}
-        # for r in range(self.tile_height):
-        #     for c in range(self.tile_width):
-        #         if self.grid[r][c]==0:
-        #             #init
-        #             if (c,r) not in graph:
-        #                 graph[(c,r)]=set()
-        #             #look at neighbors
-        #             for r_prime in range(-1, 2): #possible remove diagonals
-        #                 for c_prime in range(-1, 2):
-        #                     if r+r_prime<0 or c+c_prime<0 or r+r_prime>len(self.grid) or c+c_prime>len(self.grid[0]):
-        #                         continue
-        #                     if self.grid[r+r_prime][c+c_prime]==0:
-        #                         if (c,r)!=(c+c_prime, r+r_prime):
-        #                             if c_prime==r_prime:
-        #                                 continue
-        #                                 # if c_prime<0 and r_prime<0: #top left
-        #                                 #     if self.grid[r][c-1]==0 and self.grid[r-1][c]==0:
-        #                                 #         graph[(c,r)].add((c+c_prime, r+r_prime))
-        #                                 # if c_prime>0 and r_prime<0: #top right
-        #                                 #     if self.grid[r][c+1]==0 and self.grid[r-1][c]==0:
-        #                                 #         graph[(c,r)].add((c+c_prime, r+r_prime))
-        #                                 # if c_prime<0 and r_prime>0: #bottom left
-        #                                 #     if self.grid[r][c-1]==0 and self.grid[r+1][c]==0:
-        #                                 #         graph[(c,r)].add((c+c_prime, r+r_prime))
-        #                                 # if c_prime>0 and r_prime>0: #bottom right
-        #                                 #     if self.grid[r+1][c]==0 and self.grid[r][c+1]==0:
-        #                                 #         graph[(c,r)].add((c+c_prime, r+r_prime))
-        #                             else:
-        #                                 graph[(c,r)].add((c+c_prime, r+r_prime))
-
         graph={}
         #generate nodes
         for r in range(self.tile_height):
@@ -181,6 +150,7 @@ class OccupancyGrid:
                                 continue
                             if self.grid[r+r_prime][c+c_prime]==0:
                                 count+=1
+                    
                     if count==4:
                         graph[(c,r)]=set()
 

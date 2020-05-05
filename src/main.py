@@ -111,7 +111,7 @@ class Game:
                 Pentagram(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 
         # #monster for testing
-        # self.monster=Monster(self, self.player.pos.x+100, self.player.pos.y+32)
+        self.monster=Monster(self, self.player.pos.x+100, self.player.pos.y+32)
 
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
@@ -164,7 +164,7 @@ class Game:
             menu.win_menu()
 
         self.portal(self.player)
-        # self.portal(self.monster)
+        self.portal(self.monster)
         
 
     def portal(self, sprite):
@@ -239,8 +239,8 @@ class Game:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(goal.rect), 1)
                     
         # #   Reduce vision of the map
-        # for r in range(VISION_RADIUS, 475):
-        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        for r in range(VISION_RADIUS, 475):
+            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         
         #   Layer on the minimap if in mode 1
         if self.mode == '1':

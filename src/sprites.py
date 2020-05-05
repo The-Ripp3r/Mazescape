@@ -216,6 +216,7 @@ class Monster(pg.sprite.Sprite):
 
     def get_closest_free_square(self, sprite):
         current=(sprite.pos.x/TILESIZE, sprite.pos.y/TILESIZE)
+        
         reference=(round(current[0]), round(current[1]))
         d={}
         for x_prime in range(-1,2):
@@ -224,6 +225,12 @@ class Monster(pg.sprite.Sprite):
                 if possible_loc in self.game.graph:
                     d[possible_loc]=self.heuristic(current, possible_loc)
         
+        if len(d)==0:
+            print("SHOULD NEVER HAPPEN")
+            print(current)
+            print(sprite.name)
+            return reference  
+
         return min(d, key=d.get)
 
 
@@ -234,13 +241,7 @@ class Monster(pg.sprite.Sprite):
         ''' 
 
         start=self.get_closest_free_square(self) #current monster location
-        print(start, "start")
         goal=self.get_closest_free_square(self.game.player) #players location
-        print(goal, "goal")
-
-        print(self.game.graph[start])
-        print(self.game.graph[goal])
-
 
         distance = {start:0} #keeps track of shortest distance
         h = {} #keeps of track heuristic values
@@ -279,11 +280,6 @@ class Monster(pg.sprite.Sprite):
         self.path=path
         self.path[goal]=goal #for when the monster reaches the player
         self.next_step=self.path[start]
-
-        print("________")
-        print(self.path)
-        print("________")
-
 
     def get_keys(self):
         self.vel = vec(0, 0)
@@ -339,7 +335,6 @@ class Monster(pg.sprite.Sprite):
         Updates the x and y pixel coordinates of the player
         based on the velocities.
         """
-        print(self.pos/TILESIZE)
 
         #make path every 100 frames or something
         if self.counter%100==0:
