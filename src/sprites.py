@@ -214,13 +214,33 @@ class Monster(pg.sprite.Sprite):
         #will later change to dubin curve to return val and new orientation
         return math.sqrt((p1[0]-p0[0])**2 + (p1[1]-p0[1])**2)
 
+    def get_closest_free_square(self, sprite):
+        current=(sprite.pos.x/TILESIZE, sprite.pos.y/TILESIZE)
+        reference=(round(current[0]), round(current[1]))
+        d={}
+        for x_prime in range(-1,2):
+            for y_prime in range(-1,2):
+                possible_loc=(reference[0]+x_prime, reference[1]+y_prime)
+                if possible_loc in self.game.graph:
+                    d[possible_loc]=self.heuristic(current, possible_loc)
+        
+        return min(d, key=d.get)
+
+
+
     def generate_path(self):
         '''
         A* algorithm that returns a reverse parent dictionary
         ''' 
 
-        start=(int(self.pos.x/TILESIZE), int(self.pos.y/TILESIZE)) #current monster location
-        goal=(int(self.game.player.pos.x/TILESIZE),int(self.game.player.pos.y/TILESIZE)) #players location
+        start=self.get_closest_free_square(self) #current monster location
+        print(start, "start")
+        goal=self.get_closest_free_square(self.game.player) #players location
+        print(goal, "goal")
+
+        print(self.game.graph[start])
+        print(self.game.graph[goal])
+
 
         distance = {start:0} #keeps track of shortest distance
         h = {} #keeps of track heuristic values
@@ -271,7 +291,7 @@ class Monster(pg.sprite.Sprite):
         self.right=False
         self.up=False
         self.down=False
-        current_location = (int(self.pos.x/TILESIZE), int(self.pos.y/TILESIZE))
+        current_location = self.get_closest_free_square(self)
         
         self.counter+=1
         if self.counter%10==0: #every 10 frames
