@@ -118,7 +118,8 @@ class Camera:
 
 
 class OccupancyGrid:
-    def __init__(self, filename):
+    def __init__(self, game, filename):
+        self.game=game 
         self.grid=[]
         #make python occupancy grid
         with open(filename, 'rt') as f:
@@ -126,27 +127,51 @@ class OccupancyGrid:
             for line in f:
                 row=[]
                 for tile in line:
-                    row.append(tile)
+                    if tile=='0' or tile=='1':
+                        row.append(int(tile))
                 self.grid.append(row)
-        
+        self.tile_width=len(self.grid[0])-1
+        self.tile_height=len(self.grid)
         self.width = self.tile_width * TILESIZE
         self.height = self.tile_height * TILESIZE
 
     
     def make_graph(self):
         graph={}
-        for r in self.grid:
-            for c in r:
+        for r in range(self.tile_height):
+            for c in range(self.tile_width):
                 if self.grid[r][c]==0:
                     #init
-                    if (r,c) not in graph:
-                        graph[(r,c)]=set()
+                    if (c,r) not in graph:
+                        graph[(c,r)]=set()
                     #look at neighbors
-                    for r_prime in range(r-1, r+2): #possible remove diagonals
-                        for c_prime in range(c-1, c+2):
-                            if r_prime<0 or c_prime<0 or r_prime>len(self.grid) or c_prime>len(self.grid[0]):
+                    for r_prime in range(-1, 2): #possible remove diagonals
+                        for c_prime in range(-1, 2):
+                            if r+r_prime<0 or c+c_prime<0 or r+r_prime>len(self.grid) or c+c_prime>len(self.grid[0]):
                                 continue
-                            if self.grid[r_prime][c_prime]==0:
-                                graph[(r,c)].add((r_prime, c_prime))
+                            if self.grid[r+r_prime][c+c_prime]==0:
+                                if (c,r)!=(c+c_prime, r+r_prime):
+                                    if c_prime==r_prime:
+                                        continue
+                                        # if c_prime<0 and r_prime<0: #top left
+                                        #     if self.grid[r][c-1]==0 and self.grid[r-1][c]==0:
+                                        #         graph[(c,r)].add((c+c_prime, r+r_prime))
+                                        # if c_prime>0 and r_prime<0: #top right
+                                        #     if self.grid[r][c+1]==0 and self.grid[r-1][c]==0:
+                                        #         graph[(c,r)].add((c+c_prime, r+r_prime))
+                                        # if c_prime<0 and r_prime>0: #bottom left
+                                        #     if self.grid[r][c-1]==0 and self.grid[r+1][c]==0:
+                                        #         graph[(c,r)].add((c+c_prime, r+r_prime))
+                                        # if c_prime>0 and r_prime>0: #bottom right
+                                        #     if self.grid[r+1][c]==0 and self.grid[r][c+1]==0:
+                                        #         graph[(c,r)].add((c+c_prime, r+r_prime))
+                                    else:
+                                        graph[(c,r)].add((c+c_prime, r+r_prime))
 
+        #add teleports
+        for teleport in self.game.destinations:
+            s=(teleport[0]+self.game.offset_x, int(teleport[1]+self.game.offset_y-1))
+            e=(self.game.destinations[teleport][0]+self.game.offset_x, int(self.game.destinations[teleport][1]+self.game.offset_y-1))
+            graph[s].add(e)
+        
         return graph

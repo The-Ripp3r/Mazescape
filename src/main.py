@@ -46,11 +46,13 @@ class Game:
         #set mode
         self.mode = mode
         minimap = 'out.png' if mode == '1' else None
-        self.load_data('mvp_map.tmx', 'grid.txt', 'mvp_map_tp.txt', minimap_name=minimap)
-
         #tuning
         self.offset_x=1
         self.offset_y=2.5
+        
+        self.load_data('mvp_map.tmx', 'mvp_map.txt', 'mvp_map_tp.txt', minimap_name=minimap)
+
+       
 
     def load_data(self, map_name, grid_name, tp_name, minimap_name=None):
         """
@@ -69,7 +71,6 @@ class Game:
         # self.map = Map(path.join(self.game_folder, map_loc))
         
         self.map= TiledMap(path.join(self.map_folder, map_name))
-        self.graph= OccupancyGrid(path.join(self.map_folder, grid_name)).make_graph()
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         
@@ -81,7 +82,8 @@ class Game:
             #   destinations is a dict mapping each tilemap teleport coordinate to
             #   the destination tilemap coordinate
             self.destinations = eval(f.read())
-       
+
+        self.graph= OccupancyGrid(self, path.join(self.map_folder, grid_name)).make_graph() #down here because it needs destinations
         
     def new(self):
         """
@@ -106,6 +108,9 @@ class Game:
                 Mirror(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, self.destinations)
             if tile_object.name == "pentagram":
                 Pentagram(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+
+        #monster for testing
+        self.monster=Monster(self, self.player.pos.x+100, self.player.pos.y+32)
 
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
@@ -158,7 +163,7 @@ class Game:
             menu.win_menu()
 
         self.portal(self.player)
-        #self.portal(self.monster)
+        self.portal(self.monster)
         
 
     def portal(self, sprite):
@@ -188,6 +193,8 @@ class Game:
             sprite.rect.centerx= int(sprite.pos.x)
             sprite.rect.centery= int(sprite.pos.y)
 
+            if sprite.name=='monster':
+                sprite.generate_path()
 
 
     def update(self):
@@ -230,9 +237,9 @@ class Game:
             for goal in self.win:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(goal.rect), 1)
                     
-        #   Reduce vision of the map
-        for r in range(VISION_RADIUS, 475):
-            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        # #   Reduce vision of the map
+        # for r in range(VISION_RADIUS, 475):
+        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         
         #   Layer on the minimap if in mode 1
         if self.mode == '1':

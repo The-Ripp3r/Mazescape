@@ -35,6 +35,7 @@ class Player(pg.sprite.Sprite):
         self.pos = vec(x, y) #* TILESIZE
         self.counter=0 #counts frames
         self.step=1 #switch for images
+        self.name="player"
 
         #images
         left_w1=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_LEFT_WALK1)).convert_alpha()
@@ -101,7 +102,6 @@ class Player(pg.sprite.Sprite):
                 if self.vel.x < 0: #if moving to the left during collision
                     self.pos.x = hits[0].rect.right + self.hit_rect.width/2 # put our left hand corner to the right hand corner
                 self.vel.x = 0 #redundant
-                # print("hyuck")
                 self.hit_rect.centerx = self.pos.x
 
         if dir == "y": #analgous to x case
@@ -112,7 +112,6 @@ class Player(pg.sprite.Sprite):
                 if self.vel.y < 0: #if moving up during collision
                     self.pos.y = hits[0].rect.bottom + self.hit_rect.height/2
                 self.vel.y = 0 #redundant
-                # print("hyuck")
                 self.hit_rect.centery = self.pos.y
 
     def update(self):
@@ -142,6 +141,7 @@ class Monster(pg.sprite.Sprite):
         self.pos = vec(x, y) 
         self.counter=0
         self.step=1
+        self.name="monster"
 
         #images
         left_w1=pg.image.load(path.join(self.game.sprite_folder, MONSTER_IMG_LEFT_WALK1)).convert_alpha()
@@ -193,7 +193,6 @@ class Monster(pg.sprite.Sprite):
                 if self.vel.x < 0: #if moving to the left during collision
                     self.pos.x = hits[0].rect.right + self.hit_rect.width/2 # put our left hand corner to the right hand corner
                 self.vel.x = 0 #redundant
-                # print("hyuck")
                 self.hit_rect.centerx = self.pos.x
 
         if dir == "y": #analgous to x case
@@ -204,7 +203,6 @@ class Monster(pg.sprite.Sprite):
                 if self.vel.y < 0: #if moving up during collision
                     self.pos.y = hits[0].rect.bottom + self.hit_rect.height/2
                 self.vel.y = 0 #redundant
-                # print("hyuck")
                 self.hit_rect.centery = self.pos.y
 
     def heuristic(self, p0, p1):
@@ -219,10 +217,10 @@ class Monster(pg.sprite.Sprite):
     def generate_path(self):
         '''
         A* algorithm that returns a reverse parent dictionary
-        '''
+        ''' 
 
         start=(int(self.pos.x/TILESIZE), int(self.pos.y/TILESIZE)) #current monster location
-        goal=(int(self.game.player.pos.x/TILESIZE), int(self.game.player.pos.y/TILESIZE)) #players location
+        goal=(int(self.game.player.pos.x/TILESIZE),int(self.game.player.pos.y/TILESIZE)) #players location
 
         distance = {start:0} #keeps track of shortest distance
         h = {} #keeps of track heuristic values
@@ -249,16 +247,23 @@ class Monster(pg.sprite.Sprite):
 
             visited[current] = True #update visited; i think this order is right
             current = unvisited.popitem()[0]
-            
+        
         #reverse the parent dictionary into self.path
         pt = goal
         path = {}
         while pt != start:
             child = parent[pt]
-            path[child]=parent
+            path[child]=pt
             pt=child
 
         self.path=path
+        self.path[goal]=goal #for when the monster reaches the player
+        self.next_step=self.path[start]
+
+        print("________")
+        print(self.path)
+        print("________")
+
 
     def get_keys(self):
         self.vel = vec(0, 0)
@@ -273,30 +278,34 @@ class Monster(pg.sprite.Sprite):
             self.step+=1
         if self.step==3:
             self.step=0
-
+        
         if current_location==self.next_step:
             self.next_step=self.path[self.next_step]
 
-        if current_location.x-self.next_step[0]<0:
+        if current_location[0]-self.next_step[0]<0:
             self.right=True
-        else:
+        if current_location[0]-self.next_step[0]>0:
             self.left=True
 
-        if current_location.y-self.next_step[1]<0:
+        if current_location[1]-self.next_step[1]<0:
             self.down=True
-        else:
+        if current_location[1]-self.next_step[1]>0:
             self.up=True
 
         if self.down:
+            #print("down")
             self.image = self.img_map['down'][self.step]
             self.vel.y = MONSTERSPEED
         if self.up:
+            #print("up")
             self.image = self.img_map['up'][self.step]
             self.vel.y = -MONSTERSPEED
         if self.left:
+            #print("left")
             self.image = self.img_map['left'][self.step]
             self.vel.x = -MONSTERSPEED
         if self.right:
+            #print("right")
             self.image = self.img_map['right'][self.step]
             self.vel.x = MONSTERSPEED
         
@@ -310,9 +319,10 @@ class Monster(pg.sprite.Sprite):
         Updates the x and y pixel coordinates of the player
         based on the velocities.
         """
-        
+        print(self.pos/TILESIZE)
+
         #make path every 100 frames or something
-        if counter%100==0:
+        if self.counter%100==0:
             self.generate_path()
         
         self.get_keys()
@@ -352,8 +362,8 @@ class Mirror(pg.sprite.Sprite):
         self.rect = pg.Rect(x, y, w, h)
         self.rect.x = x 
         self.rect.y = y 
-        print(x,y)
-        print(destinations)
+        # print(x,y)
+        # print(destinations)
         self.tp_x, self.tp_y = destinations[(int(self.rect.x/TILESIZE), int(self.rect.y/TILESIZE))] #destination pt
 
 class Wall(pg.sprite.Sprite):
