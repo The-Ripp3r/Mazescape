@@ -7,6 +7,7 @@ import menu
 from settings import *
 from sprites import *
 from tilemap import *
+import time
 
 class Game:
     """
@@ -51,6 +52,7 @@ class Game:
         #tuning
         self.offset_x=1
         self.offset_y=2.5
+        self.lost=False
         
         self.load_data('extended_map.tmx', 'extended_map.txt', 'extended_map_tp.txt', minimap_name=minimap)
 
@@ -163,6 +165,11 @@ class Game:
         if pg.sprite.spritecollide(self.player, self.win, False):
             menu.win_menu()
 
+        #lose condition
+        if pg.sprite.spritecollide(self.player, self.threat, False):
+            self.lost=True
+ 
+        
         self.portal(self.player)
         self.portal(self.monster)
         
@@ -245,6 +252,11 @@ class Game:
         #   Layer on the minimap if in mode 1
         if self.mode == '1':
             self.screen.blit(self.minimap, [10, 10])
+
+        if self.lost:
+            self.draw_text("you lost", pg.font.SysFont('Arial', 60, 'bold'), WHITE, self.screen, 100, 100)
+            time.sleep(5)
+            menu.run_menu()
         
         pg.display.flip() #update the full display surface to the screen
 
@@ -259,7 +271,7 @@ class Game:
             x (int): the top left x-coordinate for the text
             y (int): the top left y-coordinate for the text
         """
-        text_obj = font.render(text, 1, color)
+        text_obj = font.render(text, True, color)
         text_rect = text_obj.get_rect()
         text_rect.topleft = (x, y)
         surface.blit(text_obj, text_rect)
