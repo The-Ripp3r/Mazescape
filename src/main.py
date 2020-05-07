@@ -254,8 +254,9 @@ class Game:
             self.screen.blit(self.minimap, [10, 10])
 
         if self.lost:
-            self.draw_text("you lost", pg.font.SysFont('Arial', 60, 'bold'), WHITE, self.screen, 100, 100)
-            time.sleep(5)
+            self.draw_text("You died", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
+            pg.display.flip()
+            time.sleep(3)
             menu.run_menu()
         
         pg.display.flip() #update the full display surface to the screen
@@ -273,7 +274,7 @@ class Game:
         """
         text_obj = font.render(text, True, color)
         text_rect = text_obj.get_rect()
-        text_rect.topleft = (x, y)
+        text_rect.center = (x, y)
         surface.blit(text_obj, text_rect)
 
     def show_go_screen(self):
