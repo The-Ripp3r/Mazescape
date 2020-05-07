@@ -157,7 +157,8 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     menu.paused = True
-                    menu.pause_menu()
+                    menu.pause_menu() #code gets stuck in this call until a button is pressed in the pause menu
+                    self.clock=pg.time.Clock()
                 if event.key == pg.K_h:
                     self.draw_debug = not self.draw_debug
 

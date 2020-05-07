@@ -328,14 +328,11 @@ class Monster(pg.sprite.Sprite):
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
 
-    
-
     def update(self):
         """
         Updates the x and y pixel coordinates of the player
         based on the velocities.
         """
-
         #make path every 100 frames or something
         if self.counter%100==0:
             self.generate_path()
