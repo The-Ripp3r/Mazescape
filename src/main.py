@@ -203,6 +203,7 @@ class Game:
             sprite.rect.centery= int(sprite.pos.y)
 
             if sprite.name=='monster':
+                print("portal")
                 sprite.generate_path()
 
 

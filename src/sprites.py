@@ -335,7 +335,10 @@ class Monster(pg.sprite.Sprite):
         """
         #make path every 100 frames or something
         if self.counter%100==0:
+            print('generating')
+            print(self.counter)
             self.generate_path()
+            print("finished")
         
         self.get_keys()
         self.pos += self.vel * self.game.dt
