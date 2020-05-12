@@ -13,7 +13,7 @@ Libraries used: pygame, os, sys
 ## Running the game
 1) Install python3
 2) Install [pygame](https://www.pygame.org/wiki/GettingStarted#Pygame%20Installation)
-3) Install [pygame-menu](https://github.com/ppizarror/pygame-menu)
+3) Install pygame-menu v2 (pip install)
 4) Install pytmx (pip install)
 5) Install heapdict (pip install)
 3) Clone the repo
