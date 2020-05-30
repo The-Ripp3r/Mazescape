@@ -103,8 +103,8 @@ class Game:
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == "player":
                 self.player = Player(self, tile_object.x, tile_object.y)
-            if tile_object.name == "monster":
-                self.monster = Monster(self, tile_object.x, tile_object.y)
+            # if tile_object.name == "monster":
+            #     self.monster = Monster(self, tile_object.x, tile_object.y)
             if tile_object.name == "wall":
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == "mirror":
@@ -199,11 +199,16 @@ class Game:
             sprite.pos.x = (destination_x+self.offset_x) * TILESIZE
             sprite.pos.y = (destination_y+self.offset_y) * TILESIZE
 
-            sprite.rect.centerx= int(sprite.pos.x)
-            sprite.rect.centery= int(sprite.pos.y)
+            sprite.hit_rect.centerx= int(sprite.pos.x)
+            sprite.hit_rect.centery= int(sprite.pos.y)
+
+            sprite.rect.center=sprite.hit_rect.center
+
+            if sprite.name=='player':
+                self.player.pause=60 # 2 second wait time
 
             if sprite.name=='monster':
-                print("portal")
+                #print("portal")
                 sprite.generate_path()
 
 

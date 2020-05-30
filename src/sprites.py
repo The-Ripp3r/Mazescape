@@ -33,8 +33,9 @@ class Player(pg.sprite.Sprite):
         self.game = game
         self.vel = vec(0, 0)
         self.pos = vec(x, y) #* TILESIZE
-        self.counter=0 #counts frames
-        self.step=1 #switch for images
+        self.frame_counter=0 #counts frames
+        self.image_counter=1 #switch for images
+        self.pause=0 #used to pause the player after teleports
         self.name="player"
 
         #images
@@ -65,22 +66,22 @@ class Player(pg.sprite.Sprite):
     def get_keys(self):
         self.vel = vec(0, 0)
         keys=pg.key.get_pressed()
-        self.counter+=1
-        if self.counter%10==0: #every 10 frames
-            self.step+=1
-        if self.step==3:
-            self.step=0
+        self.frame_counter+=1
+        if self.frame_counter%10==0: #every 10 frames
+            self.image_counter+=1
+        if self.image_counter==3:
+            self.image_counter=0
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.image = self.img_map['down'][self.step]
+            self.image = self.img_map['down'][self.image_counter]
             self.vel.y = PLAYERSPEED
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.image = self.img_map['up'][self.step]
+            self.image = self.img_map['up'][self.image_counter]
             self.vel.y = -PLAYERSPEED
         if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.image = self.img_map['left'][self.step]
+            self.image = self.img_map['left'][self.image_counter]
             self.vel.x = -PLAYERSPEED
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.image = self.img_map['right'][self.step]
+            self.image = self.img_map['right'][self.image_counter]
             self.vel.x = PLAYERSPEED
         
         if self.vel.x != 0 and self.vel.y != 0:
@@ -119,6 +120,10 @@ class Player(pg.sprite.Sprite):
         Updates the x and y pixel coordinates of the player
         based on the velocities.
         """
+        if self.pause>0:
+            self.pause-=1
+            return
+        
         self.get_keys()
         self.pos += self.vel * self.game.dt
         self.rect=self.image.get_rect()
@@ -335,10 +340,7 @@ class Monster(pg.sprite.Sprite):
         """
         #make path every 100 frames or something
         if self.counter%100==0:
-            print('generating')
-            print(self.counter)
             self.generate_path()
-            print("finished")
         
         self.get_keys()
         self.pos += self.vel * self.game.dt
