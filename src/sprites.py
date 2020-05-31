@@ -303,25 +303,28 @@ class Monster(pg.sprite.Sprite):
         self.right=False
         self.up=False
         self.down=False
-        current_location = self.get_closest_free_square(self)
-        
+        #current_location = self.get_closest_free_square(self)
+        current_location=self.pos
+        dest=(self.next_step[0]*TILESIZE, self.next_step[1]*TILESIZE)
+
         self.counter+=1
         if self.counter%10==0: #every 10 frames
             self.step+=1
         if self.step==3:
             self.step=0
         
-        if current_location==self.next_step:
+        #if current_location==self.next_step:
+        if self.heuristic(current_location, dest)<5:
             self.next_step=self.path[self.next_step]
 
-        if current_location[0]-self.next_step[0]<0:
+        if current_location[0]-dest[0]<-2:
             self.right=True
-        if current_location[0]-self.next_step[0]>0:
+        if current_location[0]-dest[0]>2:
             self.left=True
 
-        if current_location[1]-self.next_step[1]<0:
+        if current_location[1]-dest[1]<-2:
             self.down=True
-        if current_location[1]-self.next_step[1]>0:
+        if current_location[1]-dest[1]>2:
             self.up=True
 
         if self.down:

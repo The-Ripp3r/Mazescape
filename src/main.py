@@ -248,6 +248,11 @@ class Game:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(mirror.rect), 1)
             for goal in self.win:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(goal.rect), 1)
+            dest=(self.monster.next_step[0]*TILESIZE, self.monster.next_step[1]*TILESIZE)
+            next_step=pg.Rect(0, 0, 20, 20)
+            next_step.center=dest
+            pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(next_step), 1)
+            
                     
         # #   Reduce vision of the map
         # for r in range(VISION_RADIUS, 475):
