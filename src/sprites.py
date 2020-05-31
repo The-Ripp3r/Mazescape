@@ -182,6 +182,12 @@ class Monster(pg.sprite.Sprite):
         self.up=False
         self.down=False
 
+
+    def monsterspeed(self):
+        speed=max(MONSTERSPEED, MONSTERSPEED*(1+(((len(self.path)*32-160)/32)*0.04)))
+        print(speed)
+        return speed
+
     def collide_wall(self, dir):
         """
         Handles collisions between the Player sprite and Wall Sprite. 
@@ -316,19 +322,19 @@ class Monster(pg.sprite.Sprite):
         if self.down:
             #print("down")
             self.image = self.img_map['down'][self.step]
-            self.vel.y = MONSTERSPEED
+            self.vel.y = self.monsterspeed()
         if self.up:
             #print("up")
             self.image = self.img_map['up'][self.step]
-            self.vel.y = -MONSTERSPEED
+            self.vel.y = -self.monsterspeed()
         if self.left:
             #print("left")
             self.image = self.img_map['left'][self.step]
-            self.vel.x = -MONSTERSPEED
+            self.vel.x = -self.monsterspeed()
         if self.right:
             #print("right")
             self.image = self.img_map['right'][self.step]
-            self.vel.x = MONSTERSPEED
+            self.vel.x = self.monsterspeed()
         
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
