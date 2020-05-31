@@ -235,8 +235,8 @@ class Monster(pg.sprite.Sprite):
         
         reference=(round(current[0]), round(current[1]))
         d={}
-        for x_prime in range(-1,2):
-            for y_prime in range(-1,2):
+        for x_prime in range(-3,4):
+            for y_prime in range(-3,4):
                 possible_loc=(reference[0]+x_prime, reference[1]+y_prime)
                 if possible_loc in self.game.graph:
                     d[possible_loc]=self.heuristic(current, possible_loc)

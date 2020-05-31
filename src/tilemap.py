@@ -130,7 +130,7 @@ class OccupancyGrid:
                     if tile=='0' or tile=='1':
                         row.append(int(tile))
                 self.grid.append(row)
-        self.tile_width=len(self.grid[0])-1
+        self.tile_width=len(self.grid[0])
         self.tile_height=len(self.grid)
         self.width = self.tile_width * TILESIZE
         self.height = self.tile_height * TILESIZE
