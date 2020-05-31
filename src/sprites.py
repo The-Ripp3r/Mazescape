@@ -38,6 +38,7 @@ class Player(pg.sprite.Sprite):
         self.grey_image_counter=False
         self.pause=0 #used to pause the player after teleports
         self.name="player"
+        self.health=PLAYERHEALTH
 
         #images
         left_w1=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_LEFT_WALK1)).convert_alpha()
@@ -126,16 +127,9 @@ class Player(pg.sprite.Sprite):
         based on the velocities.
         """
         if self.pause>0:
-            self.pause-=1
-            if self.pause<30:
-                if self.pause%10==0:
-                    self.grey_image_counter=not self.grey_image_counter
-                    self.image=self.grey_map[self.grey_image_counter]
-            if self.pause==0:
-                self.grey_image_counter=False
-                self.image=self.img_map['up'][1]
+            self.paused()
             return
-        
+
         self.get_keys()
         self.pos += self.vel * self.game.dt
         self.rect=self.image.get_rect()
@@ -145,6 +139,20 @@ class Player(pg.sprite.Sprite):
         self.hit_rect.centery = self.pos.y
         self.collide_wall('y') 
         self.rect.center = self.hit_rect.center
+
+    def draw_health(self):
+        pass
+
+    def paused(self):
+        self.pause-=1
+        if self.pause==0:
+            self.grey_image_counter=False
+            self.image=self.img_map['up'][1]
+        elif self.pause<30:
+            if self.pause%10==0:
+                self.grey_image_counter=not self.grey_image_counter
+                self.image=self.grey_map[self.grey_image_counter]
+        
 
 
 
@@ -403,76 +411,3 @@ class Mirror(pg.sprite.Sprite):
         # print(x,y)
         # print(destinations)
         self.tp_x, self.tp_y = destinations[(int(self.rect.x/TILESIZE), int(self.rect.y/TILESIZE))] #destination pt
-
-class Wall(pg.sprite.Sprite):
-    """
-    Represents a wall sprite of a maze in Mazescape.
-
-    Attributes:
-        groups (Group): the sprite group container classes Wall is part of
-        game (Game): the game Wall is part of
-        image (Surface): the image of the Wall sprite
-        rect (Rect): a Rect object representing the Wall sprite
-        x (float): the x pixel location of the wall sprite
-        y (float): the y pixel locaiton of the wall sprite
-    """
-    def __init__(self, game, x, y):
-        self.groups= game.all_sprites, game.walls
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(GREEN)
-        self.rect = self.image.get_rect()
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
-
-class Teleport(pg.sprite.Sprite):
-    """
-    Represents a Teleport sprite of a maze in Mazescape.
-
-    Attributes:
-        groups (Group): the sprite group container classes Teleport is part of
-        game (Game): the game Teleport is part of
-        image (Surface): the image of the Teleport sprite
-        rect (Rect): a Rect object representing the Teleport sprite
-        x (float): the x pixel location of the Teleport sprite
-        y (float): the y pixel locaiton of the Teleport sprite
-    """
-    def __init__(self, game, x, y, filename):
-        self.groups = game.all_sprites, game.teleports
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(WHITE)
-        self.rect = self.image.get_rect()
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
-
-        with open(filename, 'rt') as f:
-            #   destinations is a dict mapping each tilemap teleport coordinate to
-            #   the destination tilemap coordinate
-            destinations = eval(f.read())
-            self.tp_x, self.tp_y = destinations[(self.rect.x/TILESIZE, self.rect.y/TILESIZE)] #destination pt
-
-class Goal(pg.sprite.Sprite):
-    """
-    Represents a Goal sprite of a maze in Mazescape.
-
-    Attributes:
-        groups (Group): the sprite group container classes Goal is part of
-        game (Game): the game Goal is part of
-        image (Surface): the image of the Goal sprite
-        rect (Rect): a Rect object representing the Goal sprite
-        x (float): the x pixel location of the Goal sprite
-        y (float): the y pixel locaiton of the Goal sprite
-    """
-    def __init__(self, game, x, y):
-        self.groups= game.all_sprites, game.win
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(DARKRED)
-        self.rect = self.image.get_rect()
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
-

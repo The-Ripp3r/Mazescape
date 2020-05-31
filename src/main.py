@@ -71,8 +71,6 @@ class Game:
                 maps coordinates of teleport tiles to each other in pairs.
                 tp_name is a .txt located in map subfolder of self.folder.
         """
-        # map_loc = 'maps/' + map_name + '.txt'
-        # self.map = Map(path.join(self.game_folder, map_loc))
         
         self.map= TiledMap(path.join(self.map_folder, map_name))
         self.map_img = self.map.make_map()
@@ -103,8 +101,8 @@ class Game:
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == "player":
                 self.player = Player(self, tile_object.x, tile_object.y)
-            # if tile_object.name == "monster":
-            #     self.monster = Monster(self, tile_object.x, tile_object.y)
+            if tile_object.name == "monster":
+                self.monster = Monster(self, tile_object.x, tile_object.y)
             if tile_object.name == "wall":
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == "mirror":
@@ -112,20 +110,9 @@ class Game:
             if tile_object.name == "pentagram":
                 Pentagram(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 
-        # #monster for testing
-        self.monster=Monster(self, self.player.pos.x+100, self.player.pos.y+32)
 
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
-
-        #map.txt ONLY
-        # self.goal = Goal(self, self.map.goal[0], self.map.goal[1])
-        # for loc in self.map.floor_locs:
-        #     Floor(self, loc[0], loc[1])
-        # for loc in self.map.wall_locs:
-        #     Wall(self, loc[0], loc[1])
-        # for loc in self.map.teleport_locs:
-        #     Teleport(self, loc[0], loc[1], self.teleport_map)
         
     def run(self):
         """
@@ -163,12 +150,15 @@ class Game:
                     self.draw_debug = not self.draw_debug
 
         #   win condition
-        if pg.sprite.spritecollide(self.player, self.win, False):
+        if pg.sprite.spritecollide(self.player, self.win, False, collide_hit_rect):
             menu.win_menu()
 
         #lose condition
-        if pg.sprite.spritecollide(self.player, self.threat, False):
-            self.lost=True
+        if pg.sprite.spritecollide(self.player, self.threat, False, collide_hit2_rect):
+            self.player.health-=DAMAGE
+            print("HIT")
+            if self.player.health<=0:
+                self.lost=True
  
         
         self.portal(self.player)
@@ -181,24 +171,11 @@ class Game:
         if tel_block_hit:
             #   Find the other teleport block
             destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
-            
-            # #   Adjust the destination by considering player's movement
-            # x_modifier = 0
-            # if self.player.vel.x > 0:
-            #     x_modifier = 1
-            # elif self.player.vel.x < 0:
-            #     x_modifier = -1
-            # y_modifier = 0
-            # if self.player.vel.y > 0:
-            #     y_modifier = 1
-            # elif self.player.vel.y < 0:
-            #     y_modifier = -1
             sprite.pos.x = (destination_x+self.offset_x) * TILESIZE
             sprite.pos.y = (destination_y+self.offset_y) * TILESIZE
 
             sprite.hit_rect.centerx= int(sprite.pos.x)
             sprite.hit_rect.centery= int(sprite.pos.y)
-
             sprite.rect.center=sprite.hit_rect.center
 
             if sprite.name=='player':
@@ -216,7 +193,6 @@ class Game:
         self.all_sprites.update() #*************
         self.camera.update(self.player)
 
-
     def draw_grid(self):
         """
         Draws a grid onto the map
@@ -233,8 +209,6 @@ class Game:
         """
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
-        #self.screen.fill(BGCOLOR)
-        #self.draw_grid()
 
         #   Layer player and monsters on map
         for sprite in self.all_sprites:

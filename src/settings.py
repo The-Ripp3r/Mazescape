@@ -13,15 +13,12 @@ DARKRED = (139, 0, 0)
 LIGHTBLUE = (0, 191, 255)
 
 # game settings
-#update: I changed the window screen to be comparable to a nintendo DS screen to emulate pokemon
-# the maps are currently 32x32 tiles but we can increase that to arbitrary dimensions
-# I wanted 24*16 with a tile size of 32 pixels bc that would allow 24x24 pixel or 32x32 pixel sprites
 VISION_RADIUS = 100
 SPAWN_X = 10
 SPAWN_Y = 10 #default; shouldn't need bc the map should have a span location
 
-WIDTH = 768   # 16 * 64 or 32 * 32 or 64 * 16; 1024; I changed it to 32*24 so 24 tiles across
-HEIGHT = 512  # 16 * 48 or 32 * 24 or 64 * 12; 768; I changed it to 32*16  so 16 tiles down
+WIDTH = 768   # 24 tiles across
+HEIGHT = 512  # 16 tiles down
 FPS = 60
 TITLE = "Mazescape"
 BGCOLOR = DARKGREY
@@ -32,6 +29,7 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 
 #player settings
 PLAYERSPEED = 200
+PLAYERHEALTH= 30
 PLAYER_HIT_RECT = pg.Rect(0, 0, 20, 20)
 PLAYER_IMG_FRONT_STILL = "p1_still.png"
 PLAYER_IMG_FRONT_WALK1 = "p1_walk1.png"
@@ -49,6 +47,7 @@ PLAYER_GREY_BACK_STILL = "p1_still_up_grey.png"
 
 #monster settings
 MONSTERSPEED = 30
+DAMAGE=10
 MONSTER_HIT_RECT = pg.Rect(0, 0, 20, 20)
 MONSTER_IMG_FRONT_STILL = "monster_still_down.png"
 MONSTER_IMG_FRONT_WALK1 = "monster_walk1_down.png"

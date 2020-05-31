@@ -7,48 +7,8 @@ from settings import *
 def collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.rect)
 
-class Map:
-    """
-    Represents a map of the maze in Mazescape.
-
-    Attributes:
-        wall_locs (dict): maps tilemap coordinates of walls to True
-        teleport_locs (dict): maps tilemap coordinates of teleports to True
-        player_loc (tuple): tilemap coordinates of the player sprite
-        goal (tuple): tilemap coordinates of the goal sprite
-        tile_height (int): the number of tilemap rows in the map
-        width (int): the pixel width of the map
-        height (int): the pixel height of the map
-    """
-    def __init__(self, filename):
-        self.floor_locs = {}
-        self.wall_locs = {}
-        self.teleport_locs = {}
-        self.player_loc = (SPAWN_X, SPAWN_Y)
-        with open(filename, 'rt') as f:
-                #loads map file and stores wall locations and player location
-            row = 0
-            for line in f:
-                col = 0
-                for tile in line:
-                    if tile == "1":
-                        self.wall_locs[col, row] = True
-                    if tile == ".":
-                        self.floor_locs[col, row] = True
-                    if tile == "P":
-                        self.player_loc = (col, row)   
-                    if tile == "G":
-                        self.goal = (col, row) 
-                    if tile == "T":
-                        self.teleport_locs[col, row] = True
-                    col += 1
-                self.tile_width = col
-                row += 1
-        
-        self.tile_height = row
-        self.width = self.tile_width * TILESIZE
-        self.height = self.tile_height * TILESIZE
-
+def collide_hit2_rect(one, two):
+    return one.hit_rect.colliderect(two.hit_rect)
 
 class TiledMap:
     def __init__(self, filename):
