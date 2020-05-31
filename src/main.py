@@ -182,9 +182,6 @@ class Game:
             #   Find the other teleport block
             destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
             
-            #destination_x+=1 #telelport goes by top left and the player is tracked by its center
-            # destination_y+=2
-            
             # #   Adjust the destination by considering player's movement
             # x_modifier = 0
             # if self.player.vel.x > 0:
@@ -206,9 +203,9 @@ class Game:
 
             if sprite.name=='player':
                 self.player.pause=60 # 2 second wait time
+                self.player.image=self.player.grey
 
             if sprite.name=='monster':
-                #print("portal")
                 sprite.generate_path()
 
 

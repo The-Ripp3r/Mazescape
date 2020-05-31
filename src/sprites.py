@@ -50,11 +50,14 @@ class Player(pg.sprite.Sprite):
         up_w2=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_BACK_WALK2)).convert_alpha()
         down_w1=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_FRONT_WALK1)).convert_alpha()
         down_still=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_FRONT_STILL)).convert_alpha()
-        down_w2=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_FRONT_WALK2)).convert_alpha()
+        down_w2=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_FRONT_WALK2)).convert_alpha()      
         self.img_map={'left':{0:left_w1, 1:left_still, 2:left_w2},
                     'right':{0:right_w1, 1:right_still, 2:right_w2},
                     'up':{0:up_w1, 1:up_still, 2:up_w2},
                     'down':{0:down_w1, 1:down_still, 2:down_w2}}
+
+        #teleport images
+        self.grey=pg.image.load(path.join(self.game.sprite_folder, PLAYER_GREY_BACK_STILL)).convert_alpha()
 
         self.image = down_still
         self.rect = self.image.get_rect()
@@ -122,6 +125,8 @@ class Player(pg.sprite.Sprite):
         """
         if self.pause>0:
             self.pause-=1
+            if self.pause==0:
+                self.image=self.img_map['up'][1]
             return
         
         self.get_keys()

@@ -45,6 +45,7 @@ PLAYER_IMG_LEFT_WALK2 = "p1_walk2_left.png"
 PLAYER_IMG_RIGHT_STILL = "p1_still_right.png"
 PLAYER_IMG_RIGHT_WALK1 = "p1_walk1_right.png"
 PLAYER_IMG_RIGHT_WALK2 = "p1_walk2_right.png"
+PLAYER_GREY_BACK_STILL = "p1_still_up_grey.png"
 
 #monster settings
 MONSTERSPEED = 30
