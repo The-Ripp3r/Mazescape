@@ -203,7 +203,7 @@ class Game:
 
             if sprite.name=='player':
                 self.player.pause=60 # 2 second wait time
-                self.player.image=self.player.grey
+                self.player.image=self.player.grey_map[0]
 
             if sprite.name=='monster':
                 sprite.generate_path()

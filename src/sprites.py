@@ -35,6 +35,7 @@ class Player(pg.sprite.Sprite):
         self.pos = vec(x, y) #* TILESIZE
         self.frame_counter=0 #counts frames
         self.image_counter=1 #switch for images
+        self.grey_image_counter=False
         self.pause=0 #used to pause the player after teleports
         self.name="player"
 
@@ -57,7 +58,8 @@ class Player(pg.sprite.Sprite):
                     'down':{0:down_w1, 1:down_still, 2:down_w2}}
 
         #teleport images
-        self.grey=pg.image.load(path.join(self.game.sprite_folder, PLAYER_GREY_BACK_STILL)).convert_alpha()
+        grey=pg.image.load(path.join(self.game.sprite_folder, PLAYER_GREY_BACK_STILL)).convert_alpha()
+        self.grey_map={0:grey, 1:up_still}
 
         self.image = down_still
         self.rect = self.image.get_rect()
@@ -125,7 +127,12 @@ class Player(pg.sprite.Sprite):
         """
         if self.pause>0:
             self.pause-=1
+            if self.pause<30:
+                if self.pause%10==0:
+                    self.grey_image_counter=not self.grey_image_counter
+                    self.image=self.grey_map[self.grey_image_counter]
             if self.pause==0:
+                self.grey_image_counter=False
                 self.image=self.img_map['up'][1]
             return
         
