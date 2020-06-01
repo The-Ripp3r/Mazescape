@@ -149,7 +149,7 @@ class Player(pg.sprite.Sprite):
             self.grey_image_counter=False
             self.image=self.img_map['up'][1]
         elif self.pause<30:
-            if self.pause%10==0:
+            if self.pause%ANIMATION_FLICKER_SPEED==0:
                 self.grey_image_counter=not self.grey_image_counter
                 self.image=self.grey_map[self.grey_image_counter]
         
@@ -205,7 +205,7 @@ class Monster(pg.sprite.Sprite):
 
     def monsterspeed(self):
         speed=max(MONSTERSPEED, MONSTERSPEED*(1+(((len(self.path)*32-160)/32)*0.04)))
-        print(speed)
+        #print(speed)
         return speed
 
     def collide_wall(self, dir):
@@ -257,9 +257,6 @@ class Monster(pg.sprite.Sprite):
                     d[possible_loc]=self.heuristic(current, possible_loc)
         
         if len(d)==0:
-            print("SHOULD NEVER HAPPEN")
-            print(current)
-            print(sprite.name)
             return reference  
 
         return min(d, key=d.get)
@@ -323,7 +320,7 @@ class Monster(pg.sprite.Sprite):
         dest=(self.next_step[0]*TILESIZE, self.next_step[1]*TILESIZE)
 
         self.counter+=1
-        if self.counter%10==0: #every 10 frames
+        if self.counter%ANIMATION_WALKING_SPEED==0: #every 10 frames
             self.step+=1
         if self.step==3:
             self.step=0
@@ -343,19 +340,15 @@ class Monster(pg.sprite.Sprite):
             self.up=True
 
         if self.down:
-            #print("down")
             self.image = self.img_map['down'][self.step]
             self.vel.y = self.monsterspeed()
         if self.up:
-            #print("up")
             self.image = self.img_map['up'][self.step]
             self.vel.y = -self.monsterspeed()
         if self.left:
-            #print("left")
             self.image = self.img_map['left'][self.step]
             self.vel.x = -self.monsterspeed()
         if self.right:
-            #print("right")
             self.image = self.img_map['right'][self.step]
             self.vel.x = self.monsterspeed()
         
@@ -408,6 +401,4 @@ class Mirror(pg.sprite.Sprite):
         self.rect = pg.Rect(x, y, w, h)
         self.rect.x = x 
         self.rect.y = y 
-        # print(x,y)
-        # print(destinations)
         self.tp_x, self.tp_y = destinations[(int(self.rect.x/TILESIZE), int(self.rect.y/TILESIZE))] #destination pt

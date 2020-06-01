@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="167" height="146" tilewidth="32" tileheight="32" nextobjectid="255">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="167" height="146" tilewidth="32" tileheight="32" nextobjectid="257">
  <tileset firstgid="1" source="house.tsx"/>
  <tileset firstgid="257" source="goal.tsx"/>
  <layer name="Ground" width="167" height="146">
@@ -773,5 +773,6 @@
   <object id="252" name="wall" x="2497.67" y="96" width="317.333" height="64"/>
   <object id="253" name="wall" x="2882" y="1214" width="1150" height="258"/>
   <object id="254" name="monster" x="4810" y="3568"/>
+  <object id="256" name="wall" x="1248" y="2655" width="31" height="64"/>
  </objectgroup>
 </map>
