@@ -7,6 +7,15 @@ from os import path
 from tilemap import collide_hit_rect
 vec = pg.math.Vector2
 
+def distance(p0, p1):
+    '''
+    Heuristic used in A*
+    Calculates Euclidian two points; currently used between p pt and self.goal
+    '''
+    #distance from pt to goal
+    #will later change to dubin curve to return val and new orientation
+    return math.sqrt((p1[0]-p0[0])**2 + (p1[1]-p0[1])**2)
+
 
 class Player(pg.sprite.Sprite):
     """
@@ -236,14 +245,6 @@ class Monster(pg.sprite.Sprite):
                 self.vel.y = 0 #redundant
                 self.hit_rect.centery = self.pos.y
 
-    def heuristic(self, p0, p1):
-        '''
-        Heuristic used in A*
-        Calculates Euclidian two points; currently used between p pt and self.goal
-        '''
-        #distance from pt to goal
-        #will later change to dubin curve to return val and new orientation
-        return math.sqrt((p1[0]-p0[0])**2 + (p1[1]-p0[1])**2)
 
     def get_closest_free_square(self, sprite):
         current=(sprite.pos.x/TILESIZE, sprite.pos.y/TILESIZE)
@@ -254,7 +255,7 @@ class Monster(pg.sprite.Sprite):
             for y_prime in range(-3,4):
                 possible_loc=(reference[0]+x_prime, reference[1]+y_prime)
                 if possible_loc in self.game.graph:
-                    d[possible_loc]=self.heuristic(current, possible_loc)
+                    d[possible_loc]=distance(current, possible_loc)
         
         if len(d)==0:
             return reference  
@@ -271,7 +272,7 @@ class Monster(pg.sprite.Sprite):
         start=self.get_closest_free_square(self) #current monster location
         goal=self.get_closest_free_square(self.game.player) #players location
 
-        distance = {start:0} #keeps track of shortest distance
+        d = {start:0} #keeps track of shortest distance
         h = {} #keeps of track heuristic values
         parent = {} #map from node to parent node; reconstruct with this starting from goal pt
         visited = {} #make sure we dont revist nodes
@@ -282,16 +283,16 @@ class Monster(pg.sprite.Sprite):
             for neighbor in self.game.graph[current]:
                 #look at unvisited neighbors 
                 if neighbor not in visited:
-                    val = distance[current] + self.heuristic(current, neighbor) #this is all euclidian distance; distance from start to neighbor
-                    if neighbor not in distance:
-                        distance[neighbor] = float('inf') #this is much faster than d.get(key, default), inside in case we dont reach certain points
-                    if val<distance[neighbor]: #update
+                    val = d[current] + distance(current, neighbor) #this is all euclidian distance; distance from start to neighbor
+                    if neighbor not in d:
+                        d[neighbor] = float('inf') #this is much faster than d.get(key, default), inside in case we dont reach certain points
+                    if val<d[neighbor]: #update
                         #need to update queue too; just add it or replace current value in queue with f(n)
                         if neighbor not in h:
-                            h[neighbor] = self.heuristic(neighbor, goal) #straight line distance
+                            h[neighbor] = distance(neighbor, goal) #straight line distance
                             # later use dubin curves and store oritentation as well, this is 
                         unvisited[neighbor] = val + h[neighbor] #could potentially store heuristic vals separately
-                        distance[neighbor] = val 
+                        d[neighbor] = val 
                         parent[neighbor] = current #we found a new "shortest distance" with our current node so update parent
 
             visited[current] = True #update visited; i think this order is right
@@ -326,7 +327,7 @@ class Monster(pg.sprite.Sprite):
             self.step=0
         
         #if current_location==self.next_step:
-        if self.heuristic(current_location, dest)<5:
+        if distance(current_location, dest)<5:
             self.next_step=self.path[self.next_step]
 
         if current_location[0]-dest[0]<-2:
@@ -392,6 +393,7 @@ class Pentagram(pg.sprite.Sprite):
         self.rect = pg.Rect(x, y, w, h)
         self.rect.x = x 
         self.rect.y = y 
+        self.pt = (round(x/TILESIZE), round(y/TILESIZE))
 
 class Mirror(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h, destinations):

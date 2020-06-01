@@ -8,6 +8,7 @@ from settings import *
 from sprites import *
 from tilemap import *
 import time
+from random import uniform, choice, randint
 
 class Game:
     """
@@ -85,8 +86,9 @@ class Game:
             #   the destination tilemap coordinate
             self.destinations = eval(f.read())
 
-        self.graph= OccupancyGrid(self, path.join(self.map_folder, grid_name)).make_graph() #down here because it needs destinations
-        
+        self.grid= OccupancyGrid(self, path.join(self.map_folder, grid_name)) #down here because it needs destinations
+        self.graph = self.grid.make_graph()
+
     def new(self):
         """
         Initialize and setup a new maze level.
@@ -108,7 +110,7 @@ class Game:
             if tile_object.name == "mirror":
                 Mirror(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, self.destinations)
             if tile_object.name == "pentagram":
-                Pentagram(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+                self.goal=Pentagram(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 
 
         self.camera = Camera(self.map.width, self.map.height)
@@ -156,14 +158,28 @@ class Game:
         #lose condition
         if pg.sprite.spritecollide(self.player, self.threat, False, collide_hit2_rect):
             self.player.health-=DAMAGE
-            print("HIT")
             if self.player.health<=0:
                 self.lost=True
+            else:
+                self.transmit(self.player)
+
  
         
         self.portal(self.player)
         self.portal(self.monster)
         
+
+    def transmit(self, p):
+        while True:
+            possible_loc=(randint(0, self.grid.tile_width-1), randint(0, self.grid.tile_height-1))
+            if possible_loc in self.graph and distance(possible_loc, self.goal.pt)>40:
+                p.pos.x=possible_loc[0]*TILESIZE
+                p.pos.y=possible_loc[1]*TILESIZE
+                p.hit_rect.centerx= int(p.pos.x)
+                p.hit_rect.centery= int(p.pos.y)
+                p.rect.center=p.hit_rect.center
+                return
+
 
     def portal(self, sprite):
         #   teleportation
@@ -229,8 +245,8 @@ class Game:
             
                     
         # #   Reduce vision of the map
-        for r in range(VISION_RADIUS, 475):
-            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        # for r in range(VISION_RADIUS, 475):
+        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
         
         #   Layer on the minimap if in mode 1
         if self.mode == '1':
