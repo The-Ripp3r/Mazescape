@@ -205,7 +205,7 @@ class Monster(pg.sprite.Sprite):
 
     def monsterspeed(self):
         speed=max(MONSTERSPEED, MONSTERSPEED*(1+(((len(self.path)*32-160)/32)*0.04)))
-        #print(speed)
+        print(speed)
         return speed
 
     def collide_wall(self, dir):

@@ -146,8 +146,8 @@ class Game:
                     menu.paused = True
                     menu.pause_menu() #code gets stuck in this call until a button is pressed in the pause menu
                     self.clock=pg.time.Clock()
-                # if event.key == pg.K_h:
-                #     self.draw_debug = not self.draw_debug
+                if event.key == pg.K_h:
+                    self.draw_debug = not self.draw_debug
 
         #   win condition
         if pg.sprite.spritecollide(self.player, self.win, False, collide_hit_rect):
@@ -156,7 +156,7 @@ class Game:
         #lose condition
         if pg.sprite.spritecollide(self.player, self.threat, False, collide_hit2_rect):
             self.player.health-=DAMAGE
-            #print("HIT")
+            print("HIT")
             if self.player.health<=0:
                 self.lost=True
  
