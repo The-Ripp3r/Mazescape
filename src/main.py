@@ -162,21 +162,20 @@ class Game:
     
     def hit(self):
         self.player.health-=DAMAGE
-        print(self.player.health)
+        for heart in self.hearts:
+            heart.kill()
+            break
         if self.player.health<=0:
             self.lost=True
         else:
             self.attack_sequence()
-            for heart in self.hearts:
-                heart.kill()
-                break
             self.transmit(self.player)
  
 
     def transmit(self, p):
         while True:
             possible_loc=(randint(0, self.grid.tile_width-1), randint(0, self.grid.tile_height-1))
-            if possible_loc in self.graph and distance(possible_loc, self.goal.pt)>40:
+            if possible_loc in self.graph and distance(possible_loc, self.goal.pt)>20 and distance(possible_loc, (round(self.monster.pos[0]/TILESIZE), round(self.monster.pos[1]/TILESIZE)))>10:
                 p.pos.x=possible_loc[0]*TILESIZE
                 p.pos.y=possible_loc[1]*TILESIZE
                 p.hit_rect.centerx= int(p.pos.x)
