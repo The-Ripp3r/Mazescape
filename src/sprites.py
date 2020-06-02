@@ -162,9 +162,6 @@ class Player(pg.sprite.Sprite):
                 self.grey_image_counter=not self.grey_image_counter
                 self.image=self.grey_map[self.grey_image_counter]
         
-
-
-
 class Monster(pg.sprite.Sprite):
     
     def __init__(self, game, x, y):
@@ -214,7 +211,7 @@ class Monster(pg.sprite.Sprite):
 
     def monsterspeed(self):
         speed=max(MONSTERSPEED, MONSTERSPEED*(1+(((len(self.path)*32-160)/32)*0.04)))
-        print(speed)
+        #print(speed)
         return speed
 
     def collide_wall(self, dir):
@@ -379,7 +376,6 @@ class Obstacle(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
         self.groups= game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
         self.rect = pg.Rect(x, y, w, h)
         self.rect.x = x 
         self.rect.y = y 
@@ -389,7 +385,6 @@ class Pentagram(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
         self.groups= game.win
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
         self.rect = pg.Rect(x, y, w, h)
         self.rect.x = x 
         self.rect.y = y 
@@ -399,8 +394,15 @@ class Mirror(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h, destinations):
         self.groups = game.teleports
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
         self.rect = pg.Rect(x, y, w, h)
         self.rect.x = x 
         self.rect.y = y 
         self.tp_x, self.tp_y = destinations[(int(self.rect.x/TILESIZE), int(self.rect.y/TILESIZE))] #destination pt
+
+class Heart(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.hearts
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.image = pg.image.load(path.join(game.sprite_folder, HEART_FILE)).convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.center=(x,y)

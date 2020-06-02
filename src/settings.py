@@ -27,6 +27,12 @@ TILESIZE = 32
 GRIDWIDTH = WIDTH / TILESIZE
 GRIDHEIGHT = HEIGHT / TILESIZE
 
+#heart
+HEART_FILE = 'heart.png'
+
+#Music
+MUSIC_FILE = 'sounds/background_deltarune.mp3'
+
 #animations
 ANIMATION_WALKING_SPEED = 10 #frames
 ANIMATION_FLICKER_SPEED = 10 #frames

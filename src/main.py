@@ -37,7 +37,6 @@ class Game:
             camera (Camera): represents the camera on the map
     """
     def __init__(self, mode):
-        pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
@@ -56,8 +55,6 @@ class Game:
         self.lost=False
         
         self.load_data('extended_map.tmx', 'extended_map.txt', 'extended_map_tp.txt', minimap_name=minimap)
-
-       
 
     def load_data(self, map_name, grid_name, tp_name, minimap_name=None):
         """
@@ -98,7 +95,7 @@ class Game:
         self.teleports = pg.sprite.Group() 
         self.win = pg.sprite.Group() 
         self.threat = pg.sprite.Group()
-        
+        self.hearts= pg.sprite.Group()
         
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == "player":
@@ -112,8 +109,9 @@ class Game:
             if tile_object.name == "pentagram":
                 self.goal=Pentagram(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 
-
         self.camera = Camera(self.map.width, self.map.height)
+        for i in range (3):
+            Heart(self, 726-37*(2-i), 20)
         self.draw_debug = False
         
     def run(self):
@@ -155,19 +153,25 @@ class Game:
         if pg.sprite.spritecollide(self.player, self.win, False, collide_hit_rect):
             menu.win_menu()
 
-        #lose condition
+        #got hit condition
         if pg.sprite.spritecollide(self.player, self.threat, False, collide_hit2_rect):
-            self.player.health-=DAMAGE
-            if self.player.health<=0:
-                self.lost=True
-            else:
-                self.transmit(self.player)
+            self.hit()
 
- 
-        
         self.portal(self.player)
         self.portal(self.monster)
-        
+    
+    def hit(self):
+        self.player.health-=DAMAGE
+        print(self.player.health)
+        if self.player.health<=0:
+            self.lost=True
+        else:
+            self.attack_sequence()
+            for heart in self.hearts:
+                heart.kill()
+                break
+            self.transmit(self.player)
+ 
 
     def transmit(self, p):
         while True:
@@ -206,7 +210,7 @@ class Game:
         """
         Updates the frame of the game
         """
-        self.all_sprites.update() #*************
+        self.all_sprites.update() 
         self.camera.update(self.player)
 
     def draw_grid(self):
@@ -252,11 +256,11 @@ class Game:
         if self.mode == '1':
             self.screen.blit(self.minimap, [10, 10])
 
+        for heart in self.hearts:
+            self.screen.blit(heart.image, heart.rect)
+
         if self.lost:
-            self.draw_text("You died", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
-            pg.display.flip()
-            time.sleep(3)
-            menu.run_menu()
+            self.losing_sequence()
         
         pg.display.flip() #update the full display surface to the screen
 
@@ -276,7 +280,16 @@ class Game:
         text_rect.center = (x, y)
         surface.blit(text_obj, text_rect)
 
-    def show_go_screen(self):
+    def beginning_sequence(self):
+        pass
+
+    def losing_sequence(self):
+        self.draw_text("You died", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
+        pg.display.flip()
+        time.sleep(3)
+        menu.run_menu()
+
+    def attack_sequence(self):
         pass
 
 def run_game(mode):
@@ -284,13 +297,12 @@ def run_game(mode):
     g= Game(mode)
     while True:
         g.new()
+        g.beginning_sequence()
         g.run()
-        g.show_go_screen()
 
 #   Music
 pg.init()
-file_path = 'sounds/background_deltarune.mp3'
-pg.mixer.music.load(file_path)
+pg.mixer.music.load(MUSIC_FILE)
 pg.mixer.music.play(-1)
 #   Run Game
 menu.game_function = run_game
