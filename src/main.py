@@ -169,7 +169,7 @@ class Game:
     def hit(self):
         self.player.health-=DAMAGE
         for heart in self.hearts:
-            heart.kill()
+            heart.dissolve=True
             break
         if self.player.health<=0:
             self.lost=True
@@ -257,9 +257,9 @@ class Game:
         for sprite in self.static_sprites:
             self.screen.blit(sprite.image, sprite.rect)
 
-        # # #   Reduce vision of the map
-        for r in range(VISION_RADIUS, 475):
-            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        # # # #   Reduce vision of the map
+        # for r in range(VISION_RADIUS, 475):
+        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
 
 
         #   Layer on the minimap if in mode 1

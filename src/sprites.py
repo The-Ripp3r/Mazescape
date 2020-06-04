@@ -441,20 +441,33 @@ class Heart(pg.sprite.Sprite):
         self.groups = game.hearts, game.static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.image = pg.image.load(path.join(game.sprite_folder, HEART_FILE)).convert_alpha()
-        # self.dissolve_images=[]
-        # for i in range(3):
-        #     filename = 'dissolve_{}'.format(i)
-        #     img = pg.image.load(path.join(game.animation_folder, filename)).convert_alpha()
-        #     self.dissolve_images.append(img)
+        self.dissolve_images=[]
+        for i in range(9):
+            filename = 'dissolve_{}.png'.format(i)
+            img = pg.image.load(path.join(game.animation_folder, filename)).convert_alpha()
+            self.dissolve_images.append(img)
 
         self.rect = self.image.get_rect()
         self.rect.center=(x,y)
         self.dissolve=False
+        self.frame=-1
+        self.frame_rate=60
+        self.last_update=pg.time.get_ticks()
 
     def update(self):
         if self.dissolve:
-            pass
-
+            now = pg.time.get_ticks()
+            if now - self.last_update>self.frame_rate:
+                self.last_update=now
+                self.frame+=1
+                if self.frame==len(self.dissolve_images):
+                    self.kill()
+                    return
+                center=self.rect.center
+                self.image = self.dissolve_images[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+            
 class Darkness(pg.sprite.Sprite):
     def __init__(self):
         self._layer=DARKNESS_LAYER
