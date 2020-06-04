@@ -451,7 +451,7 @@ class Heart(pg.sprite.Sprite):
         self.rect.center=(x,y)
         self.dissolve=False
         self.frame=-1
-        self.frame_rate=60
+        self.frame_rate=90
         self.last_update=pg.time.get_ticks()
 
     def update(self):
@@ -469,13 +469,15 @@ class Heart(pg.sprite.Sprite):
                 self.rect.center = center
             
 class Darkness(pg.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, game, x, y):
         self._layer=DARKNESS_LAYER
         self.groups = game.static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        #self.visible=
-        #self.blackout=
-        #self.image = self.visible
+        self.visible= pg.image.load(path.join(game.animation_folder, "visible.png")).convert_alpha()
+        self.blackout= pg.image.load(path.join(game.animation_folder, "darkness.png")).convert_alpha()
+        self.image = self.visible
+        self.rect = self.image.get_rect()
+        self.rect.center=(x,y)
 
     def update(self):
         pass

@@ -114,10 +114,11 @@ class Game:
                 self.goal=Pentagram(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 
         self.camera = Camera(self.map.width, self.map.height)
+
+        self.flashlight=Flashlight(self, int(WIDTH/2), int(HEIGHT/2))
         for i in range (3):
             Heart(self, 726-37*(2-i), 20)
-        self.flashlight=Flashlight(self, int(WIDTH/2), int(HEIGHT/2))
-        
+        self.dark=Darkness(self, int(WIDTH/2), int(HEIGHT/2))
         self.draw_debug = False
         
     def run(self):
