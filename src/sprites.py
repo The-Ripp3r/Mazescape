@@ -407,17 +407,20 @@ class Flashlight(pg.sprite.Sprite):
         self.groups = game.static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.images=[]
-        for i in range(3):
-            filename = 'glow_v{}.png'.format(i)
+        filename = 'glow_v0.png'
+        for i in range(10):
             img = pg.image.load(path.join(game.animation_folder, filename)).convert_alpha()
-            img = pg.transform.scale(img, (400, 400))
+            if i<5:    
+                img = pg.transform.scale(img, (400-10*i, 400))
+            if i>=5:
+                img = self.images[9-i]
             self.images.append(img)
 
         self.image=self.images[0]
         self.rect = self.image.get_rect()
         self.rect.center=(x,y)
         self.frame=0
-        self.frame_rate=60
+        self.frame_rate=10
         self.last_update=pg.time.get_ticks()
     
     def update(self):

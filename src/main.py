@@ -257,9 +257,9 @@ class Game:
         for sprite in self.static_sprites:
             self.screen.blit(sprite.image, sprite.rect)
 
-        # # # #   Reduce vision of the map
-        # for r in range(VISION_RADIUS, 475):
-        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
+        # # #   Reduce vision of the map
+        for r in range(VISION_RADIUS, 475):
+            pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
 
 
         #   Layer on the minimap if in mode 1
@@ -309,8 +309,8 @@ def run_game(mode):
 
 #   Music
 pg.init()
-pg.mixer.music.load(MUSIC_FILE)
-pg.mixer.music.play(-1)
+# pg.mixer.music.load(MUSIC_FILE)
+# pg.mixer.music.play(-1)
 #   Run Game
 menu.game_function = run_game
 menu.run_menu()
