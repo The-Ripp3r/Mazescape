@@ -53,7 +53,6 @@ class Game:
         #tuning
         self.offset_x=1
         self.offset_y=2.5
-        self.lost=False
         
         self.load_data('extended_map.tmx', 'extended_map.txt', 'extended_map_tp.txt', minimap_name=minimap)
 
@@ -116,7 +115,7 @@ class Game:
         self.camera = Camera(self.map.width, self.map.height)
 
         self.flashlight=Flashlight(self, int(WIDTH/2), int(HEIGHT/2))
-        for i in range (3):
+        for i in range(int(PLAYERHEALTH/10)):
             Heart(self, 726-37*(2-i), 20)
         self.dark=Darkness(self, int(WIDTH/2), int(HEIGHT/2))
         self.draw_debug = False
@@ -132,6 +131,7 @@ class Game:
             self.events()
             self.update()
             self.draw()
+        self.losing_sequence()
 
     def quit_game(self):
         """
@@ -173,7 +173,7 @@ class Game:
             heart.dissolve=True
             break
         if self.player.health<=0:
-            self.lost=True
+            self.playing=False
         else:
             self.attack_sequence()
             self.transmit(self.player)
@@ -258,17 +258,9 @@ class Game:
         for sprite in self.static_sprites:
             self.screen.blit(sprite.image, sprite.rect)
 
-        # # # #   Reduce vision of the map
-        # for r in range(VISION_RADIUS, 475):
-        #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
-
-
         #   Layer on the minimap if in mode 1
         if self.mode == '1':
             self.screen.blit(self.minimap, [10, 10])
-
-        if self.lost:
-            self.losing_sequence()
         
         pg.display.flip() #update the full display surface to the screen
 
@@ -292,6 +284,17 @@ class Game:
         pass
 
     def losing_sequence(self):
+        while len(self.hearts)>0:
+            self.dt = self.clock.tick(FPS) / 1000
+            pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
+            self.static_sprites.update()
+            for sprite in self.static_sprites:
+                self.screen.blit(sprite.image, sprite.rect)
+            #   Layer on the minimap if in mode 1
+            if self.mode == '1':
+                self.screen.blit(self.minimap, [10, 10])
+            pg.display.flip()
+        print("DEATH")
         self.draw_text("You died", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
         pg.display.flip()
         time.sleep(3)
