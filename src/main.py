@@ -27,7 +27,7 @@ class Game:
             teleport_map (str): path to file that has dict of teleport locations 
         
         Maze Level Data:
-            all_sprites (Group): container class to hold multiple Sprite objects
+            moving_sprites (Group): container class to hold multiple Sprite objects
             walls (Group): container class to hold multiple Wall objects
             teleports (Group): container class to hold multiple Teleport objects
             win (Group): container class to hold win conditions
@@ -43,6 +43,7 @@ class Game:
         #folder names
         self.game_folder = path.dirname(__file__)
         self.sprite_folder = path.join(self.game_folder, 'sprites')
+        self.animation_folder = path.join(self.game_folder, 'animation')
         self.map_folder = path.join(self.game_folder, 'maps')
         #set mode
         self.mode = mode
@@ -90,7 +91,10 @@ class Game:
         """
         Initialize and setup a new maze level.
         """
-        self.all_sprites = pg.sprite.Group() 
+        #groups for drawing
+        self.moving_sprites = pg.sprite.LayeredUpdates() 
+        self.static_sprites = pg.sprite.LayeredUpdates()
+        #other groups
         self.walls = pg.sprite.Group()
         self.teleports = pg.sprite.Group() 
         self.win = pg.sprite.Group() 
@@ -112,6 +116,8 @@ class Game:
         self.camera = Camera(self.map.width, self.map.height)
         for i in range (3):
             Heart(self, 726-37*(2-i), 20)
+        self.flashlight=Flashlight(self, int(WIDTH/2), int(HEIGHT/2))
+        
         self.draw_debug = False
         
     def run(self):
@@ -209,7 +215,8 @@ class Game:
         """
         Updates the frame of the game
         """
-        self.all_sprites.update() 
+        self.moving_sprites.update() 
+        self.static_sprites.update()
         self.camera.update(self.player)
 
     def draw_grid(self):
@@ -230,10 +237,11 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
 
         #   Layer player and monsters on map
-        for sprite in self.all_sprites:
+        for sprite in self.moving_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
             if self.draw_debug:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(sprite.hit_rect), 1)
+        
         if self.draw_debug:
             for wall in self.walls:
                 pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(wall.rect), 1)
@@ -246,17 +254,17 @@ class Game:
             next_step.center=dest
             pg.draw.rect(self.screen, LIGHTBLUE, self.camera.apply_rect(next_step), 1)
             
-                    
-        # #   Reduce vision of the map
+        for sprite in self.static_sprites:
+            self.screen.blit(sprite.image, sprite.rect)
+
+        # # # #   Reduce vision of the map
         # for r in range(VISION_RADIUS, 475):
         #     pg.draw.circle(self.screen, BLACK, (int(WIDTH/2), int(HEIGHT/2)), r, 1)
-        
+
+
         #   Layer on the minimap if in mode 1
         if self.mode == '1':
             self.screen.blit(self.minimap, [10, 10])
-
-        for heart in self.hearts:
-            self.screen.blit(heart.image, heart.rect)
 
         if self.lost:
             self.losing_sequence()

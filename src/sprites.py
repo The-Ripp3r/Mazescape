@@ -37,7 +37,8 @@ class Player(pg.sprite.Sprite):
 
 
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites
+        self._layer=PLAYER_LAYER
+        self.groups = game.moving_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.vel = vec(0, 0)
@@ -165,7 +166,8 @@ class Player(pg.sprite.Sprite):
 class Monster(pg.sprite.Sprite):
     
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.threat
+        self._layer=MONSTER_LAYER
+        self.groups = game.moving_sprites, game.threat
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.vel = vec(0, 0)
@@ -399,10 +401,65 @@ class Mirror(pg.sprite.Sprite):
         self.rect.y = y 
         self.tp_x, self.tp_y = destinations[(int(self.rect.x/TILESIZE), int(self.rect.y/TILESIZE))] #destination pt
 
-class Heart(pg.sprite.Sprite):
+class Flashlight(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.hearts
+        self._layer=FLASHLIGHT_LAYER
+        self.groups = game.static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = pg.image.load(path.join(game.sprite_folder, HEART_FILE)).convert_alpha()
+        self.images=[]
+        for i in range(3):
+            filename = 'glow_v{}.png'.format(i)
+            img = pg.image.load(path.join(game.animation_folder, filename)).convert_alpha()
+            img = pg.transform.scale(img, (400, 400))
+            self.images.append(img)
+
+        self.image=self.images[0]
         self.rect = self.image.get_rect()
         self.rect.center=(x,y)
+        self.frame=0
+        self.frame_rate=60
+        self.last_update=pg.time.get_ticks()
+    
+    def update(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update>self.frame_rate:
+            self.last_update=now
+            self.frame+=1
+            if self.frame==len(self.images):
+                self.frame=0
+            center=self.rect.center
+            self.image = self.images[self.frame]
+            self.rect = self.image.get_rect()
+            self.rect.center = center
+
+class Heart(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self._layer=HEART_LAYER
+        self.groups = game.hearts, game.static_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.image = pg.image.load(path.join(game.sprite_folder, HEART_FILE)).convert_alpha()
+        # self.dissolve_images=[]
+        # for i in range(3):
+        #     filename = 'dissolve_{}'.format(i)
+        #     img = pg.image.load(path.join(game.animation_folder, filename)).convert_alpha()
+        #     self.dissolve_images.append(img)
+
+        self.rect = self.image.get_rect()
+        self.rect.center=(x,y)
+        self.dissolve=False
+
+    def update(self):
+        if self.dissolve:
+            pass
+
+class Darkness(pg.sprite.Sprite):
+    def __init__(self):
+        self._layer=DARKNESS_LAYER
+        self.groups = game.static_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        #self.visible=
+        #self.blackout=
+        #self.image = self.visible
+
+    def update(self):
+        pass
