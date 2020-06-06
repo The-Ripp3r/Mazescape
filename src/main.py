@@ -200,6 +200,10 @@ class Game:
                 self.screen.blit(sprite.image, sprite.rect)
             self.draw_text("transition", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
             pg.display.flip()
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.KEYDOWN:
+                    return
                                         
     def kidnap(self, sprite):
         while True:
@@ -214,6 +218,7 @@ class Game:
                 sprite.pause=PLAYER_PAUSE_DURATION
                 sprite.image=sprite.grey_map[sprite.pause_transition][0]
                 self.darkness.on=False
+                self.battery.kill()
                 self.battery=Battery(self, 726, 52)
                 return
 

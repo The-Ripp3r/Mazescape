@@ -518,12 +518,14 @@ class Battery(pg.sprite.Sprite):
         self.rect.center=(x,y)
         self.dissolve=False
         self.bars=3
-        self.duration=10000
+        self.duration=1000
         self.last_update=pg.time.get_ticks()
 
     def update(self):
         now = pg.time.get_ticks()
         if now - self.last_update>self.duration:
+            print("update")
+            print(self.bars)
             self.last_update=now
             self.bars-=1
             center=self.rect.center
