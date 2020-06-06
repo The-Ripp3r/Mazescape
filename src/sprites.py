@@ -116,9 +116,9 @@ class Player(pg.sprite.Sprite):
         if dir == "x":
             hits = pg.sprite.spritecollide(self, self.game.walls, False, collide_hit_rect)
             if hits:
-                if self.vel.x > 0: #if moving to the right during collision
+                if hits[0].rect.centerx > self.hit_rect.centerx: #if moving to the right during collision
                     self.pos.x = hits[0].rect.left - self.hit_rect.width/2 #put our left hand corner to the left hand corner of the object we hit and shift ourselves outside of tht object
-                if self.vel.x < 0: #if moving to the left during collision
+                if hits[0].rect.centerx < self.hit_rect.centerx: #if moving to the left during collision
                     self.pos.x = hits[0].rect.right + self.hit_rect.width/2 # put our left hand corner to the right hand corner
                 self.vel.x = 0 #redundant
                 self.hit_rect.centerx = self.pos.x
@@ -126,9 +126,9 @@ class Player(pg.sprite.Sprite):
         if dir == "y": #analgous to x case
             hits = pg.sprite.spritecollide(self, self.game.walls, False, collide_hit_rect)
             if hits:
-                if self.vel.y > 0: #if moving down during collision
+                if hits[0].rect.centery > self.hit_rect.centery: #if moving down during collision
                     self.pos.y = hits[0].rect.top - self.hit_rect.height/2 
-                if self.vel.y < 0: #if moving up during collision
+                if hits[0].rect.centery < self.hit_rect.centery: #if moving up during collision
                     self.pos.y = hits[0].rect.bottom + self.hit_rect.height/2
                 self.vel.y = 0 #redundant
                 self.hit_rect.centery = self.pos.y

@@ -88,5 +88,5 @@ MONSTER_IMG_LEFT_WALK2 = "monster_walk2_left.png"
 MONSTER_IMG_RIGHT_STILL = "monster_still_right.png"
 MONSTER_IMG_RIGHT_WALK1 = "monster_walk1_right.png"
 MONSTER_IMG_RIGHT_WALK2 = "monster_walk2_right.png"
-
+MONSTER_KNOCKBACK = 20
 

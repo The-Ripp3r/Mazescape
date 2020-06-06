@@ -166,8 +166,9 @@ class Game:
             menu.win_menu()
 
         #got hit condition
-        if pg.sprite.spritecollide(self.player, self.threat, False, collide_hit2_rect):
-            self.hit(self.player)
+        hit=pg.sprite.spritecollide(self.player, self.threat, False, collide_hit2_rect)
+        if hit:
+            self.hit(self.player, hit[0])
         
         #mirror
         self.portal(self.player)
@@ -183,9 +184,10 @@ class Game:
         if sprite.health<=0:
             self.playing=False
 
-    def hit(self, sprite):
+    def hit(self, sprite, attacker):
         self.damage(sprite)
         self.attack_sequence()
+        sprite.pos+=vec(MONSTER_KNOCKBACK, 0).rotate(attacker.vel.as_polar()[1])
 
     def darkness_transition(self, sprite):
         self.damage(sprite)
