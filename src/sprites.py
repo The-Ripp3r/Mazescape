@@ -47,6 +47,7 @@ class Player(pg.sprite.Sprite):
         self.image_counter=1 #switch for images
         self.grey_image_counter=False
         self.pause=0 #used to pause the player after teleports
+        self.pause_transition=0 #0 for mirror, 1 for darkness
         self.name="player"
         self.health=PLAYERHEALTH
 
@@ -69,8 +70,9 @@ class Player(pg.sprite.Sprite):
                     'down':{0:down_w1, 1:down_still, 2:down_w2}}
 
         #teleport images
-        grey=pg.image.load(path.join(self.game.sprite_folder, PLAYER_GREY_BACK_STILL)).convert_alpha()
-        self.grey_map={0:grey, 1:up_still}
+        grey_back=pg.image.load(path.join(self.game.sprite_folder, PLAYER_GREY_BACK_STILL)).convert_alpha()
+        grey_front=pg.image.load(path.join(self.game.sprite_folder, PLAYER_GREY_FRONT_STILL)).convert_alpha()
+        self.grey_map={0:{0:grey_back, 1:up_still}, 1:{0:grey_front, 1:down_still}}
 
         self.image = down_still
         self.rect = self.image.get_rect()
@@ -157,11 +159,11 @@ class Player(pg.sprite.Sprite):
         self.pause-=1
         if self.pause==0:
             self.grey_image_counter=False
-            self.image=self.img_map['up'][1]
+            self.image=self.grey_map[self.pause_transition][1]
         elif self.pause<30:
             if self.pause%ANIMATION_FLICKER_SPEED==0:
                 self.grey_image_counter=not self.grey_image_counter
-                self.image=self.grey_map[self.grey_image_counter]
+                self.image=self.grey_map[self.pause_transition][self.grey_image_counter]
         
 class Monster(pg.sprite.Sprite):
     
@@ -434,6 +436,24 @@ class Flashlight(pg.sprite.Sprite):
             self.image = self.images[self.frame]
             self.rect = self.image.get_rect()
             self.rect.center = center
+            
+class Darkness(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self._layer=DARKNESS_LAYER
+        self.groups = game.static_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.visible= pg.image.load(path.join(game.animation_folder, "visible.png")).convert_alpha()
+        self.blackout= pg.image.load(path.join(game.animation_folder, "darkness.png")).convert_alpha()
+        self.image = self.visible
+        self.rect = self.image.get_rect()
+        self.rect.center=(x,y)
+        self.on=False
+
+    def update(self):
+        if self.on:
+            self.image=self.blackout
+        else:
+            self.image=self.visible
 
 class Heart(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -467,17 +487,49 @@ class Heart(pg.sprite.Sprite):
                 self.image = self.dissolve_images[self.frame]
                 self.rect = self.image.get_rect()
                 self.rect.center = center
-            
-class Darkness(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self._layer=DARKNESS_LAYER
+
+class Minimap(pg.sprite.Sprite):
+    def __init__(self, game, filename):
+        self._layer=MINIMAP_LAYER
         self.groups = game.static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.visible= pg.image.load(path.join(game.animation_folder, "visible.png")).convert_alpha()
-        self.blackout= pg.image.load(path.join(game.animation_folder, "darkness.png")).convert_alpha()
-        self.image = self.visible
+        self.image = pg.image.load(path.join(game.map_folder, filename)).convert_alpha()
+        self.image = pg.transform.scale(self.image, (WIDTH//3, HEIGHT//3))
         self.rect = self.image.get_rect()
-        self.rect.center=(x,y)
+        self.rect = MINIMAP_LOCATION
 
     def update(self):
         pass
+
+class Battery(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self._layer = BATTERY_LAYER
+        self.groups = game.static_sprites
+        self.game=game
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.images = [] 
+        for i in range(4):
+            filename = 'battery_{}.png'.format(i)
+            img = pg.image.load(path.join(game.animation_folder, filename)).convert_alpha()
+            self.images.append(img)
+
+        self.image=self.images[-1]
+        self.rect = self.image.get_rect()
+        self.rect.center=(x,y)
+        self.dissolve=False
+        self.bars=3
+        self.duration=10000
+        self.last_update=pg.time.get_ticks()
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update>self.duration:
+            self.last_update=now
+            self.bars-=1
+            center=self.rect.center
+            self.image = self.images[self.bars]
+            self.rect = self.image.get_rect()
+            self.rect.center = center
+            if self.bars==0:
+                self.game.darkness.on=True
+                self.game.darkness.image=self.game.darkness.blackout

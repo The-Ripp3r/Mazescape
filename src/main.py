@@ -47,16 +47,16 @@ class Game:
         self.map_folder = path.join(self.game_folder, 'maps')
         #set mode
         self.mode = mode
-        minimap = 'extended_map.png' if mode == '1' else None
+        self.minimap_name = 'extended_map.png' if mode == '1' else None
      
 
         #tuning
         self.offset_x=1
         self.offset_y=2.5
         
-        self.load_data('extended_map.tmx', 'extended_map.txt', 'extended_map_tp.txt', minimap_name=minimap)
+        self.load_data('extended_map.tmx', 'extended_map.txt', 'extended_map_tp.txt')
 
-    def load_data(self, map_name, grid_name, tp_name, minimap_name=None):
+    def load_data(self, map_name, grid_name, tp_name):
         """
         Loads data for a specific game map level.
 
@@ -73,10 +73,6 @@ class Game:
         self.map= TiledMap(path.join(self.map_folder, map_name))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
-        
-        if minimap_name != None:
-            self.minimap = pg.image.load(path.join(self.map_folder, minimap_name)).convert_alpha()
-            self.minimap = pg.transform.scale(self.minimap, (WIDTH//3, HEIGHT//3))
         
         with open(path.join(self.map_folder, tp_name), 'rt') as f:
             #   destinations is a dict mapping each tilemap teleport coordinate to
@@ -114,10 +110,14 @@ class Game:
 
         self.camera = Camera(self.map.width, self.map.height)
 
+        #static sprites
         self.flashlight=Flashlight(self, int(WIDTH/2), int(HEIGHT/2))
+        self.darkness=Darkness(self, int(WIDTH/2), int(HEIGHT/2))
+        if self.minimap_name != None:
+            self.minimap=Minimap(self, self.minimap_name)
         for i in range(int(PLAYERHEALTH/10)):
             Heart(self, 726-37*(2-i), 20)
-        self.dark=Darkness(self, int(WIDTH/2), int(HEIGHT/2))
+        self.battery= Battery(self, 726, 52)
         self.draw_debug = False
         
     def run(self):
@@ -156,40 +156,64 @@ class Game:
                 if event.key == pg.K_h:
                     self.draw_debug = not self.draw_debug
 
+        #darkness condition
+        if self.darkness.on:
+            self.darkness_transition(self.player)
+            self.kidnap(self.player)
+
         #   win condition
         if pg.sprite.spritecollide(self.player, self.win, False, collide_hit_rect):
             menu.win_menu()
 
         #got hit condition
         if pg.sprite.spritecollide(self.player, self.threat, False, collide_hit2_rect):
-            self.hit()
-
+            self.hit(self.player)
+        
+        #mirror
         self.portal(self.player)
         self.portal(self.monster)
     
-    def hit(self):
-        self.player.health-=DAMAGE
+    def damage(self, sprite):
+        sprite.health-=MONSTER_DAMAGE
         for heart in self.hearts:
+            if heart.dissolve==True:
+                continue
             heart.dissolve=True
             break
-        if self.player.health<=0:
+        if sprite.health<=0:
             self.playing=False
-        else:
-            self.attack_sequence()
-            self.transmit(self.player)
- 
 
-    def transmit(self, p):
+    def hit(self, sprite):
+        self.damage(sprite)
+        self.attack_sequence()
+
+    def darkness_transition(self, sprite):
+        self.damage(sprite)
+        if sprite.health==0:
+            self.losing_sequence() #maybe change this to be a lil more developed
+        current=len(self.hearts)
+        while len(self.hearts)!=current-1:
+            self.hearts.update()
+            for sprite in self.static_sprites:
+                self.screen.blit(sprite.image, sprite.rect)
+            self.draw_text("transition", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
+            pg.display.flip()
+                                        
+    def kidnap(self, sprite):
         while True:
             possible_loc=(randint(0, self.grid.tile_width-1), randint(0, self.grid.tile_height-1))
             if possible_loc in self.graph and distance(possible_loc, self.goal.pt)>20 and distance(possible_loc, (round(self.monster.pos[0]/TILESIZE), round(self.monster.pos[1]/TILESIZE)))>10:
-                p.pos.x=possible_loc[0]*TILESIZE
-                p.pos.y=possible_loc[1]*TILESIZE
-                p.hit_rect.centerx= int(p.pos.x)
-                p.hit_rect.centery= int(p.pos.y)
-                p.rect.center=p.hit_rect.center
+                sprite.pos.x=possible_loc[0]*TILESIZE
+                sprite.pos.y=possible_loc[1]*TILESIZE
+                sprite.hit_rect.centerx= int(sprite.pos.x)
+                sprite.hit_rect.centery= int(sprite.pos.y)
+                sprite.rect.center=sprite.hit_rect.center
+                sprite.pause_transition=1
+                sprite.pause=PLAYER_PAUSE_DURATION
+                sprite.image=sprite.grey_map[sprite.pause_transition][0]
+                self.darkness.on=False
+                self.battery=Battery(self, 726, 52)
                 return
-
 
     def portal(self, sprite):
         #   teleportation
@@ -205,12 +229,12 @@ class Game:
             sprite.rect.center=sprite.hit_rect.center
 
             if sprite.name=='player':
-                self.player.pause=PAUSE_DURATION # 2 second wait time
-                self.player.image=self.player.grey_map[0]
+                sprite.pause_transition=0
+                sprite.pause=PLAYER_PAUSE_DURATION # 2 second wait time
+                sprite.image=sprite.grey_map[sprite.pause_transition][0]
 
             if sprite.name=='monster':
                 sprite.generate_path()
-
 
     def update(self):
         """
@@ -257,10 +281,6 @@ class Game:
             
         for sprite in self.static_sprites:
             self.screen.blit(sprite.image, sprite.rect)
-
-        #   Layer on the minimap if in mode 1
-        if self.mode == '1':
-            self.screen.blit(self.minimap, [10, 10])
         
         pg.display.flip() #update the full display surface to the screen
 
@@ -285,16 +305,13 @@ class Game:
 
     def losing_sequence(self):
         while len(self.hearts)>0:
-            self.dt = self.clock.tick(FPS) / 1000
-            pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
-            self.static_sprites.update()
+            self.hearts.update()
+            self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+            for sprite in self.moving_sprites:
+                self.screen.blit(sprite.image, self.camera.apply(sprite))
             for sprite in self.static_sprites:
                 self.screen.blit(sprite.image, sprite.rect)
-            #   Layer on the minimap if in mode 1
-            if self.mode == '1':
-                self.screen.blit(self.minimap, [10, 10])
             pg.display.flip()
-        print("DEATH")
         self.draw_text("You died", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
         pg.display.flip()
         time.sleep(3)
@@ -313,8 +330,8 @@ def run_game(mode):
 
 #   Music
 pg.init()
-# pg.mixer.music.load(MUSIC_FILE)
-# pg.mixer.music.play(-1)
+pg.mixer.music.load(MUSIC_FILE)
+pg.mixer.music.play(-1)
 #   Run Game
 menu.game_function = run_game
 menu.run_menu()

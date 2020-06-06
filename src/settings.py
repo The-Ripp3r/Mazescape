@@ -36,6 +36,10 @@ FLASHLIGHT_LAYER = 1
 DARKNESS_LAYER = 2
 HEART_LAYER = 3
 BATTERY_LAYER = 3 
+MINIMAP_LAYER = 3
+
+#minimap
+MINIMAP_LOCATION = (10, 10)
 
 #heart
 HEART_FILE = 'heart.png'
@@ -46,7 +50,7 @@ MUSIC_FILE = 'sounds/background_deltarune.mp3'
 #animations
 ANIMATION_WALKING_SPEED = 10 #frames
 ANIMATION_FLICKER_SPEED = 10 #frames
-PAUSE_DURATION = 60 #frames so 1 second
+PLAYER_PAUSE_DURATION = 60 #frames so 1 second
 
 #player settings
 PLAYERSPEED = 200
@@ -65,10 +69,12 @@ PLAYER_IMG_RIGHT_STILL = "p1_still_right.png"
 PLAYER_IMG_RIGHT_WALK1 = "p1_walk1_right.png"
 PLAYER_IMG_RIGHT_WALK2 = "p1_walk2_right.png"
 PLAYER_GREY_BACK_STILL = "p1_still_up_grey.png"
+PLAYER_GREY_FRONT_STILL = "p1_still_grey.png"
+
 
 #monster settings
 MONSTERSPEED = 30
-DAMAGE=10
+MONSTER_DAMAGE=10
 MONSTER_HIT_RECT = pg.Rect(0, 0, 20, 20)
 MONSTER_IMG_FRONT_STILL = "monster_still_down.png"
 MONSTER_IMG_FRONT_WALK1 = "monster_walk1_down.png"
