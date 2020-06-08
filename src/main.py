@@ -188,6 +188,12 @@ class Game:
         self.damage(sprite)
         self.attack_sequence()
         sprite.pos+=vec(MONSTER_KNOCKBACK, 0).rotate(attacker.vel.as_polar()[1])
+        sprite.hit_rect.centerx= int(sprite.pos.x)
+        sprite.hit_rect.centery= int(sprite.pos.y)
+        sprite.rect.center=sprite.hit_rect.center
+        attacker.pause=MONSTER_PAUSE_DURATION
+        sprite.pause_transition=0 #eventually change 2 and implement red sprite
+        sprite.pause=PLAYER_PAUSE_DURATION_HIT
 
     def darkness_transition(self, sprite):
         self.damage(sprite)
@@ -198,13 +204,23 @@ class Game:
             self.hearts.update()
             for sprite in self.static_sprites:
                 self.screen.blit(sprite.image, sprite.rect)
+            #self.draw_text_by_letter("practice", pg.font.SysFont('Arial', 60, 'bold'), WHITE, self.screen, 10, HEIGHT-20)
             self.draw_text("transition", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
             pg.display.flip()
         while True:
             for event in pg.event.get():
                 if event.type == pg.KEYDOWN:
                     return
-                                        
+    
+    def draw_text_by_letter(self, text, font, color, surface, x, y):
+        if len(text)>0:
+            letter_obj = font.render(text[0], True, color)
+            letter_rect=letter_obj.get_rect()
+            letter_rect.center=(x,y)
+            surface.blit(letter_obj, letter_rect)
+            pg.display.flip()
+            self.draw_text_by_letter(text[1:len(text)], font, color, surface, x+letter_rect.width, y)
+
     def kidnap(self, sprite):
         while True:
             possible_loc=(randint(0, self.grid.tile_width-1), randint(0, self.grid.tile_height-1))
@@ -215,8 +231,7 @@ class Game:
                 sprite.hit_rect.centery= int(sprite.pos.y)
                 sprite.rect.center=sprite.hit_rect.center
                 sprite.pause_transition=1
-                sprite.pause=PLAYER_PAUSE_DURATION
-                sprite.image=sprite.grey_map[sprite.pause_transition][0]
+                sprite.pause=PLAYER_PAUSE_DURATION_KIDNAP
                 self.darkness.on=False
                 self.battery.kill()
                 self.battery=Battery(self, 726, 52)
@@ -237,8 +252,7 @@ class Game:
 
             if sprite.name=='player':
                 sprite.pause_transition=0
-                sprite.pause=PLAYER_PAUSE_DURATION # 2 second wait time
-                sprite.image=sprite.grey_map[sprite.pause_transition][0]
+                sprite.pause=PLAYER_PAUSE_DURATION_TELEPORT # 2 second wait time
 
             if sprite.name=='monster':
                 sprite.generate_path()

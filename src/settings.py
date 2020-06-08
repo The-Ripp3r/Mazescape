@@ -49,8 +49,11 @@ MUSIC_FILE = 'sounds/background_deltarune.mp3'
 
 #animations
 ANIMATION_WALKING_SPEED = 10 #frames
-ANIMATION_FLICKER_SPEED = 10 #frames
-PLAYER_PAUSE_DURATION = 60 #frames so 1 second
+ANIMATION_FLICKER_SPEED = 5 #frames
+PLAYER_PAUSE_DURATION_TELEPORT = 60 #frames so 1 second
+PLAYER_PAUSE_DURATION_KIDNAP = 60 #frames so 1 second
+PLAYER_PAUSE_DURATION_HIT = 30 #0.5 seconds
+MONSTER_PAUSE_DURATION = 60
 
 #player settings
 PLAYERSPEED = 200

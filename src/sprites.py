@@ -45,7 +45,7 @@ class Player(pg.sprite.Sprite):
         self.pos = vec(x, y) #* TILESIZE
         self.frame_counter=0 #counts frames
         self.image_counter=1 #switch for images
-        self.grey_image_counter=False
+        self.grey_image_counter=True
         self.pause=0 #used to pause the player after teleports
         self.pause_transition=0 #0 for mirror, 1 for darkness
         self.name="player"
@@ -156,14 +156,16 @@ class Player(pg.sprite.Sprite):
         pass
 
     def paused(self):
+        self.image=self.grey_map[self.pause_transition][0] #initializes grey image
         self.pause-=1
         if self.pause==0:
-            self.grey_image_counter=False
+            self.grey_image_counter=True
             self.image=self.grey_map[self.pause_transition][1]
-        elif self.pause<30:
+        elif self.pause<=30:
             if self.pause%ANIMATION_FLICKER_SPEED==0:
-                self.grey_image_counter=not self.grey_image_counter
                 self.image=self.grey_map[self.pause_transition][self.grey_image_counter]
+                self.grey_image_counter=not self.grey_image_counter
+                
         
 class Monster(pg.sprite.Sprite):
     
@@ -177,6 +179,7 @@ class Monster(pg.sprite.Sprite):
         self.counter=0
         self.step=1
         self.name="monster"
+        self.pause=0
 
         #images
         left_w1=pg.image.load(path.join(self.game.sprite_folder, MONSTER_IMG_LEFT_WALK1)).convert_alpha()
@@ -362,6 +365,10 @@ class Monster(pg.sprite.Sprite):
         Updates the x and y pixel coordinates of the player
         based on the velocities.
         """
+        if self.pause>0:
+            self.pause-=1
+            return
+
         #make path every 100 frames or something
         if self.counter%100==0:
             self.generate_path()
@@ -518,14 +525,12 @@ class Battery(pg.sprite.Sprite):
         self.rect.center=(x,y)
         self.dissolve=False
         self.bars=3
-        self.duration=1000
+        self.duration=100000
         self.last_update=pg.time.get_ticks()
 
     def update(self):
         now = pg.time.get_ticks()
         if now - self.last_update>self.duration:
-            print("update")
-            print(self.bars)
             self.last_update=now
             self.bars-=1
             center=self.rect.center
