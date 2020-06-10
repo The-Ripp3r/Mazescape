@@ -45,11 +45,13 @@ class Player(pg.sprite.Sprite):
         self.pos = vec(x, y) #* TILESIZE
         self.frame_counter=0 #counts frames
         self.image_counter=1 #switch for images
-        self.grey_image_counter=True
+        self.flicker_image_counter=True
         self.pause=0 #used to pause the player after teleports
-        self.pause_transition=0 #0 for mirror, 1 for darkness
+        self.pause_transition=0 #0 for mirror, 1 for damage
+        self.direction=None #used for flicker animations
         self.name="player"
         self.health=PLAYERHEALTH
+        self.dir = None #current direction of player
 
         #images
         left_w1=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_LEFT_WALK1)).convert_alpha()
@@ -70,9 +72,17 @@ class Player(pg.sprite.Sprite):
                     'down':{0:down_w1, 1:down_still, 2:down_w2}}
 
         #teleport images
-        grey_back=pg.image.load(path.join(self.game.sprite_folder, PLAYER_GREY_BACK_STILL)).convert_alpha()
-        grey_front=pg.image.load(path.join(self.game.sprite_folder, PLAYER_GREY_FRONT_STILL)).convert_alpha()
-        self.grey_map={0:{0:grey_back, 1:up_still}, 1:{0:grey_front, 1:down_still}}
+        teleport_back=pg.image.load(path.join(self.game.sprite_folder, PLAYER_TELEPORT_BACK_STILL)).convert_alpha()
+        hurt_right=pg.image.load(path.join(self.game.sprite_folder, PLAYER_HURT_RIGHT)).convert_alpha()
+        hurt_left=pg.image.load(path.join(self.game.sprite_folder, PLAYER_HURT_LEFT)).convert_alpha()
+        hurt_up=pg.image.load(path.join(self.game.sprite_folder, PLAYER_HURT_UP)).convert_alpha()
+        hurt_down=pg.image.load(path.join(self.game.sprite_folder, PLAYER_HURT_DOWN)).convert_alpha()
+        self.flicker_map={0:{0:teleport_back, 1:up_still}, 1:{'right':{0:hurt_right, 1:right_still}, 
+        'left':{0:hurt_left, 1:left_still}, 
+        'up':{0:hurt_up, 1:up_still}, 
+        'down':{0:hurt_down, 1:down_still}
+            }
+        }
 
         self.image = down_still
         self.rect = self.image.get_rect()
@@ -92,15 +102,19 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.image = self.img_map['down'][self.image_counter]
             self.vel.y = PLAYERSPEED
+            self.dir = 'down'
         if keys[pg.K_UP] or keys[pg.K_w]:
             self.image = self.img_map['up'][self.image_counter]
             self.vel.y = -PLAYERSPEED
+            self.dir = 'up'
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.image = self.img_map['left'][self.image_counter]
             self.vel.x = -PLAYERSPEED
+            self.dir = 'left'
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.image = self.img_map['right'][self.image_counter]
             self.vel.x = PLAYERSPEED
+            self.dir = 'right'
         
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071 #pythagorean theorem if it was v speed in one direction and you want to break it up into x and y; ensures diagonal speed isnt too fast
@@ -156,15 +170,25 @@ class Player(pg.sprite.Sprite):
         pass
 
     def paused(self):
-        self.image=self.grey_map[self.pause_transition][0] #initializes grey image
+        if self.direction!=None: 
+            self.image=self.flicker_map[self.pause_transition][self.direction][0]
+        else: 
+            self.image=self.flicker_map[self.pause_transition][0]
         self.pause-=1
         if self.pause==0:
-            self.grey_image_counter=True
-            self.image=self.grey_map[self.pause_transition][1]
+            self.flicker_image_counter=True
+            if self.direction!=None: 
+                self.image=self.flicker_map[self.pause_transition][self.direction][1]
+            else: 
+                self.image=self.flicker_map[self.pause_transition][1]
+            self.direction=None
         elif self.pause<=30:
             if self.pause%ANIMATION_FLICKER_SPEED==0:
-                self.image=self.grey_map[self.pause_transition][self.grey_image_counter]
-                self.grey_image_counter=not self.grey_image_counter
+                if self.direction!=None: 
+                    self.image=self.flicker_map[self.pause_transition][self.direction][self.flicker_image_counter]
+                else: 
+                    self.image=self.flicker_map[self.pause_transition][self.flicker_image_counter]
+                self.flicker_image_counter=not self.flicker_image_counter
                 
         
 class Monster(pg.sprite.Sprite):

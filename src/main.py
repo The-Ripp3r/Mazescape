@@ -192,8 +192,9 @@ class Game:
         sprite.hit_rect.centery= int(sprite.pos.y)
         sprite.rect.center=sprite.hit_rect.center
         attacker.pause=MONSTER_PAUSE_DURATION
-        sprite.pause_transition=0 #eventually change 2 and implement red sprite
+        sprite.pause_transition=1
         sprite.pause=PLAYER_PAUSE_DURATION_HIT
+        sprite.direction=sprite.dir
 
     def darkness_transition(self, sprite):
         self.damage(sprite)
@@ -232,6 +233,7 @@ class Game:
                 sprite.rect.center=sprite.hit_rect.center
                 sprite.pause_transition=1
                 sprite.pause=PLAYER_PAUSE_DURATION_KIDNAP
+                sprite.direction=sprite.dir
                 self.darkness.on=False
                 self.battery.kill()
                 self.battery=Battery(self, 726, 52)

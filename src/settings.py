@@ -71,8 +71,12 @@ PLAYER_IMG_LEFT_WALK2 = "p1_walk2_left.png"
 PLAYER_IMG_RIGHT_STILL = "p1_still_right.png"
 PLAYER_IMG_RIGHT_WALK1 = "p1_walk1_right.png"
 PLAYER_IMG_RIGHT_WALK2 = "p1_walk2_right.png"
-PLAYER_GREY_BACK_STILL = "p1_still_up_grey.png"
-PLAYER_GREY_FRONT_STILL = "p1_still_grey.png"
+PLAYER_TELEPORT_BACK_STILL = "p1_still_up_teleport.png"
+PLAYER_HURT_RIGHT = "p1_hurt_right.png"
+PLAYER_HURT_LEFT = "p1_hurt_left.png"
+PLAYER_HURT_UP = "p1_hurt_up.png"
+PLAYER_HURT_DOWN = "p1_hurt_down.png"
+
 
 
 #monster settings
