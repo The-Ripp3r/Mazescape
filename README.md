@@ -18,3 +18,7 @@ Libraries used: pygame, os, sys
 5) Install heapdict (pip install)
 3) Clone the repo
 4) `python3 main.py`
+
+## Bugs/Suggestions
+
+Although the game is still currently in development ("checkout" the dev branch!), if you find a bug and want to report it or you have a suggestion for the game, please feel free to send me an email at esr@mit.edu
