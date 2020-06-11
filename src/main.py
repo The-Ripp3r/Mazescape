@@ -85,6 +85,10 @@ class Game:
         self.grid= OccupancyGrid(self, path.join(self.map_folder, grid_name)) #down here because it needs destinations
         self.graph = self.grid.make_graph()
 
+        #sounds
+        self.wall_channel=pg.mixer.Channel(0)
+        self.wall_sound=pg.mixer.Sound(WALL_THUD_SOUND)
+
     def new(self):
         """
         Initialize and setup a new maze level.
@@ -366,7 +370,7 @@ def run_game(mode):
 
 #   Music
 pg.init()
-pg.mixer.music.load(MUSIC_FILE)
+pg.mixer.music.load(MAIN_MUSIC_FILE)
 pg.mixer.music.play(-1)
 #   Run Game
 menu.game_function = run_game
