@@ -64,7 +64,9 @@ def play_function(game_function, mode):
     # main_menu as the menu that will check all your input.
     main_menu.disable()
     print(MODE[0])
-    game_function(MODE[0])
+    mode=MODE[0]
+    MODE[0]='1'
+    game_function(mode)
 
 def main_background():
     """
