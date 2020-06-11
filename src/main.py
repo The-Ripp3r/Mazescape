@@ -88,6 +88,8 @@ class Game:
         #sounds
         self.wall_channel=pg.mixer.Channel(0)
         self.wall_sound=pg.mixer.Sound(WALL_THUD_SOUND)
+        self.teleport_channel=pg.mixer.Channel(1)
+        self.teleport_sound=pg.mixer.Sound(TELEPORT_SOUND)
 
     def new(self):
         """
@@ -272,6 +274,8 @@ class Game:
             if sprite.name=='player':
                 sprite.pause_transition=0
                 sprite.pause=PLAYER_PAUSE_DURATION_TELEPORT # 2 second wait time
+                if not self.teleport_channel.get_busy():
+                    self.teleport_channel.play(self.teleport_sound)
 
             if sprite.name=='monster':
                 sprite.generate_path()

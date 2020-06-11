@@ -50,6 +50,7 @@ BATTERY_DURATION=10000
 #SOUND_EFFECTS
 MAIN_MUSIC_FILE = 'sounds/background_deltarune.mp3'
 WALL_THUD_SOUND = 'sounds/thud.wav'
+TELEPORT_SOUND = 'sounds/teleport.wav'
 
 #animations
 ANIMATION_WALKING_SPEED = 10 #frames
