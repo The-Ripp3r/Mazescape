@@ -9,6 +9,7 @@ from sprites import *
 from tilemap import *
 import time
 from random import uniform, choice, randint
+import numpy as np
 
 class Game:
     """
@@ -128,6 +129,10 @@ class Game:
             Heart(self, 726-37*(2-i), 20)
         self.battery= Battery(self, 726, 52)
         self.draw_debug = False
+
+        self.teleport_list=[]
+        for tele in self.teleports:
+            self.teleport_list.append(tele)
         
     def run(self):
         """
@@ -263,7 +268,12 @@ class Game:
         tel_block_hit = pg.sprite.spritecollide(sprite, self.teleports, False)
         if tel_block_hit:
             #   Find the other teleport block
-            destination_x, destination_y = tel_block_hit[0].tp_x, tel_block_hit[0].tp_y
+            target=tel_block_hit
+            if sprite.name=='monster':
+                prob=[0.9 if (tele.tp_x==tel_block_hit[0].tp_x and tele.tp_y==tel_block_hit[0].tp_y)else 0.1/(len(self.teleport_list)-1) for tele in self.teleport_list]
+                target=np.random.choice(self.teleport_list, 1, p=prob)
+            
+            destination_x, destination_y = target[0].tp_x, target[0].tp_y
             sprite.pos.x = (destination_x+self.offset_x) * TILESIZE
             sprite.pos.y = (destination_y+self.offset_y) * TILESIZE
 
@@ -325,7 +335,6 @@ class Game:
             
         for sprite in self.static_sprites:
             self.screen.blit(sprite.image, sprite.rect)
-        
         pg.display.flip() #update the full display surface to the screen
 
     def draw_text(self, text, font, color, surface, x, y): #use for narrative in end sequence
