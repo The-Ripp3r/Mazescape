@@ -48,6 +48,9 @@ class Game:
         #set mode
         self.mode = mode
         self.minimap_name = 'extended_map.png' if mode == '1' else None
+
+        #misc
+        self.transition=False
      
 
         #tuning
@@ -155,9 +158,18 @@ class Game:
                     self.clock=pg.time.Clock()
                 if event.key == pg.K_h:
                     self.draw_debug = not self.draw_debug
+                if event.key == pg.K_o:
+                    if self.flashlight.on:#turning off flashlight
+                        self.darkness.on = True
+                        self.battery.duration-=pg.time.get_ticks()-self.battery.last_update
+                        self.flashlight.on=False
+                    else: #turning on flashlight
+                        self.darkness.on = False
+                        self.battery.last_update=pg.time.get_ticks()
+                        self.flashlight.on=True
 
         #darkness condition
-        if self.darkness.on:
+        if self.transition:
             self.darkness_transition(self.player)
             self.kidnap(self.player)
 
@@ -206,7 +218,7 @@ class Game:
             for sprite in self.static_sprites:
                 self.screen.blit(sprite.image, sprite.rect)
             #self.draw_text_by_letter("practice", pg.font.SysFont('Arial', 60, 'bold'), WHITE, self.screen, 10, HEIGHT-20)
-            self.draw_text("transition", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
+            self.draw_text("You got lost", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
             pg.display.flip()
         while True:
             for event in pg.event.get():
@@ -237,6 +249,7 @@ class Game:
                 self.darkness.on=False
                 self.battery.kill()
                 self.battery=Battery(self, 726, 52)
+                self.transition=False
                 return
 
     def portal(self, sprite):
