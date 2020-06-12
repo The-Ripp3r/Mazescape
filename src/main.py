@@ -10,6 +10,7 @@ from tilemap import *
 import time
 from random import uniform, choice, randint
 import numpy as np
+from filters import *
 
 class Game:
     """
@@ -52,6 +53,8 @@ class Game:
 
         #misc
         self.transition=False
+        self.last_update_noise=pg.time.get_ticks()
+        self.fuzz=False
      
 
         #tuning
@@ -76,6 +79,9 @@ class Game:
         
         self.map= TiledMap(path.join(self.map_folder, map_name))
         self.map_img = self.map.make_map()
+        self.map_img2 = self.map_img
+        #self.noisy_map_img = noisy("gauss", pg.surfarray.array3d(self.map_img))
+        self.noisy_map_img = make_noisy(pg.surfarray.array3d(self.map_img))
         self.map_rect = self.map_img.get_rect()
         
         with open(path.join(self.map_folder, tp_name), 'rt') as f:
@@ -313,7 +319,28 @@ class Game:
         Draws the given map level by layering all the sprites.
         """
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
-        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+
+        
+
+        if distance(self.player.pos, self.monster.pos)<MONSTER_BUBBLE_DISTANCE:
+            now=pg.time.get_ticks()
+            if self.fuzz:
+                wait=NOISE_DURATION
+            else:
+                wait=NOISE_TIMESTEP #change to a function of distance to monster
+            if now - self.last_update_noise>wait:
+                self.last_update_noise=now
+                if self.fuzz:
+                    self.map_img2=self.map_img
+                else:
+                    self.map_img2=self.noisy_map_img
+                    #make static sound
+                self.fuzz=not self.fuzz
+        else:
+            self.map_img2=self.map_img
+            self.fuzz=False
+
+        self.screen.blit(self.map_img2, self.camera.apply_rect(self.map_rect))
 
         #   Layer player and monsters on map
         for sprite in self.moving_sprites:
