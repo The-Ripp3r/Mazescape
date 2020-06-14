@@ -181,8 +181,6 @@ class Player(pg.sprite.Sprite):
         pass
 
     def paused(self):
-        print(self.direction, "DIRECTION")
-        print(self.pause_transition, "TRANSITION")
         if self.direction!=None: 
             self.image=self.flicker_map[self.pause_transition][self.direction][0]
         else: 
@@ -298,8 +296,6 @@ class Monster(pg.sprite.Sprite):
                     d[possible_loc]=distance(current, possible_loc)
         
         if len(d)==0:
-            print("FUCK")
-            print(sprite.name)
             return reference  
 
         return min(d, key=d.get)
