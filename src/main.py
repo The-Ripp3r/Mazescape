@@ -226,30 +226,33 @@ class Game:
         sprite.direction=sprite.dir
 
     def darkness_transition(self, sprite):
-        self.damage(sprite)
-        if sprite.health==0:
-            self.losing_sequence() #maybe change this to be a lil more developed
-        current=len(self.hearts)
-        while len(self.hearts)!=current-1:
-            self.hearts.update()
-            for sprite in self.static_sprites:
-                self.screen.blit(sprite.image, sprite.rect)
-            #self.draw_text_by_letter("practice", pg.font.SysFont('Arial', 60, 'bold'), WHITE, self.screen, 10, HEIGHT-20)
-            self.draw_text("You got lost", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
-            pg.display.flip()
+        for sprite in self.static_sprites:
+            self.screen.blit(sprite.image, sprite.rect)
+        self.draw_text_by_letter("Batteries died", pg.font.SysFont('Arial', 20, 'bold'), WHITE, self.screen, 130, HEIGHT-250, WORD_TIMESTEP)
+        self.draw_text_by_letter("...", pg.font.SysFont('Arial', 20, 'bold'), WHITE, self.screen, self.last_x, HEIGHT-250, 500)
+        self.draw_text_by_letter("you got lost.", pg.font.SysFont('Arial', 20, 'bold'), WHITE, self.screen, self.last_x, HEIGHT-250, WORD_TIMESTEP)
+        #self.draw_text("You got lost", pg.font.SysFont('Arial', 60, 'bold'), DARKRED, self.screen, self.camera.apply(self.player).centerx+10, self.camera.apply(self.player).centery)
         while True:
             for event in pg.event.get():
                 if event.type == pg.KEYDOWN:
                     return
     
-    def draw_text_by_letter(self, text, font, color, surface, x, y):
-        if len(text)>0:
-            letter_obj = font.render(text[0], True, color)
-            letter_rect=letter_obj.get_rect()
-            letter_rect.center=(x,y)
-            surface.blit(letter_obj, letter_rect)
-            pg.display.flip()
-            self.draw_text_by_letter(text[1:len(text)], font, color, surface, x+letter_rect.width, y)
+    def draw_text_by_letter(self, text, font, color, surface, x, y, speed):
+        last=pg.time.get_ticks()
+        while True:
+            now=pg.time.get_ticks()
+            if now-last>speed:
+                if len(text)>0:
+                    last=now
+                    letter_obj = font.render(text[0], True, color)
+                    letter_rect=letter_obj.get_rect()
+                    letter_rect.center=(x,y)
+                    surface.blit(letter_obj, letter_rect)
+                    pg.display.flip()
+                    if len(text)==1:
+                        self.last_x=letter_rect.x+letter_rect.width+10
+                    self.draw_text_by_letter(text[1:len(text)], font, color, surface, x+letter_rect.width+5, y, speed)
+                break
 
     def kidnap(self, sprite):
         while True:
@@ -265,8 +268,10 @@ class Game:
                 sprite.direction=sprite.dir
                 self.darkness.on=False
                 self.battery.kill()
+                self.clock=pg.time.Clock() #reset clock because there was prolonged waiting time from main game loop in transition
                 self.battery=Battery(self, 726, 52)
                 self.transition=False
+                self.damage(sprite)
                 return
 
     def portal(self, sprite):
