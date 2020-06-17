@@ -52,6 +52,8 @@ class Player(pg.sprite.Sprite):
         self.name="player"
         self.health=PLAYERHEALTH
         self.dir = None #current direction of player
+        self.last_update_thud_sound=pg.time.get_ticks()
+        self.speed=PLAYERSPEED/4
 
         #images
         left_w1=pg.image.load(path.join(self.game.sprite_folder, PLAYER_IMG_LEFT_WALK1)).convert_alpha()
@@ -94,6 +96,14 @@ class Player(pg.sprite.Sprite):
     def get_keys(self):
         self.vel = vec(0, 0)
         keys=pg.key.get_pressed()
+
+        
+        if keys[pg.K_RSHIFT] or keys[pg.K_LSHIFT]:
+            self.speed=PLAYERSPEED
+        else:
+            self.speed=PLAYERSPEED/4
+
+
         self.frame_counter+=1
         if self.frame_counter%10==0: #every 10 frames
             self.image_counter+=1
@@ -101,19 +111,19 @@ class Player(pg.sprite.Sprite):
             self.image_counter=0
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.image = self.img_map['down'][self.image_counter]
-            self.vel.y = PLAYERSPEED
+            self.vel.y = self.speed
             self.dir = 'down'
         if keys[pg.K_UP] or keys[pg.K_w]:
             self.image = self.img_map['up'][self.image_counter]
-            self.vel.y = -PLAYERSPEED
+            self.vel.y = -self.speed
             self.dir = 'up'
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.image = self.img_map['left'][self.image_counter]
-            self.vel.x = -PLAYERSPEED
+            self.vel.x = -self.speed
             self.dir = 'left'
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.image = self.img_map['right'][self.image_counter]
-            self.vel.x = PLAYERSPEED
+            self.vel.x = self.speed
             self.dir = 'right'
         
         if self.vel.x != 0 and self.vel.y != 0:
@@ -155,6 +165,9 @@ class Player(pg.sprite.Sprite):
                 self.hit_rect.centery = self.pos.y
 
         if moving_against_wall:
+            # now=pg.time.get_ticks()
+            # if now - self.last_update_thud_sound>500:
+            #     self.last_update_thud_sound=now
             if not self.game.wall_channel.get_busy():
                 self.game.wall_channel.play(self.game.wall_sound)
 

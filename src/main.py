@@ -184,7 +184,7 @@ class Game:
                         self.darkness.on = False
                         self.battery.last_update=pg.time.get_ticks()
                         self.flashlight.on=True
-
+        
         #darkness condition
         if self.transition:
             self.darkness_transition(self.player)
