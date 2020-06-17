@@ -16,9 +16,9 @@ Libraries used: pygame, os, sys
 3) 'pip install pygame-menu==2.3.3'
 4) Install pytmx (pip install)
 5) Install heapdict (pip install)
-6) 'pip install opencv-python'
+6) `pip install opencv-python`
 7) Clone the repo
-8) 'cd src/'
+8) `cd src/`
 9) `python3 main.py`
 
 ## Bugs/Suggestions
