@@ -575,10 +575,12 @@ class Battery(pg.sprite.Sprite):
         self.bars=3
         self.duration=BATTERY_DURATION
         self.last_update=pg.time.get_ticks()
+        self.image_counter=False
 
     def update(self):
         if self.game.flashlight.on:        
             now = pg.time.get_ticks()
+            diff=self.duration - (now - self.last_update)
             if now - self.last_update>self.duration:
                 self.last_update=now
                 self.bars-=1
@@ -587,7 +589,17 @@ class Battery(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.center = center
                 self.duration=BATTERY_DURATION
+                self.image_counter=False
                 if self.bars==0:
                     self.game.transition=True
                     self.game.darkness.on=True
                     self.game.darkness.image=self.game.darkness.blackout
+
+            else:
+                if diff<=10000:
+                    if diff%10==0:
+                        if self.image_counter:
+                            self.image=self.images[self.bars-1]
+                        else:
+                            self.image=self.images[self.bars]
+                        self.image_counter=not self.image_counter

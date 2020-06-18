@@ -45,7 +45,7 @@ MINIMAP_LOCATION = (10, 10)
 HEART_FILE = 'heart.png'
 
 #battery
-BATTERY_DURATION=100000
+BATTERY_DURATION=20000
 
 #SOUND_EFFECTS
 MAIN_MUSIC_FILE = 'sounds/background_deltarune.mp3'
